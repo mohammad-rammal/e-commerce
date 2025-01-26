@@ -1,0 +1,19 @@
+const express = require('express');
+const {getBrands, createBrand, getBrand, updateBrand, deleteBrand} = require('../controllers/brandController');
+const {
+    getBrandValidator,
+    createBrandValidator,
+    updateBrandValidator,
+    deleteBrandValidator,
+} = require('../utils/validators/brandValidator');
+
+const router = express.Router();
+
+router.route('/').get(getBrands).post(createBrandValidator, createBrand);
+router
+    .route('/:idC')
+    .get(getBrandValidator, getBrand)
+    .put(updateBrandValidator, updateBrand)
+    .delete(deleteBrandValidator, deleteBrand);
+
+module.exports = router;
