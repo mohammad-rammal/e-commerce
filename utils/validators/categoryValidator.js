@@ -1,6 +1,7 @@
 const {check} = require('express-validator');
 const validatorMiddleware = require('../../middlewares/validatorMiddleware');
 
+// Separation of concern
 // Array of Rules
 //
 exports.getCategoryValidator = [
