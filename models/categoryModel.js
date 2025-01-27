@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const slugify = require('slugify');
 
 const categorySchema = new mongoose.Schema(
     {
@@ -15,9 +16,15 @@ const categorySchema = new mongoose.Schema(
         },
         image: String,
     },
-    {timestamps: true}
+    {timestamps: true},
 );
 
 const CategoryModel = mongoose.model('Category', categorySchema);
+
+// categorySchema.pre('save', function (next) {
+//     console.log(this);
+//     this.slug = slugify(this.name, {lower: true});
+//     next();
+// });
 
 module.exports = CategoryModel;

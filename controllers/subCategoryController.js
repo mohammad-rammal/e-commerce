@@ -31,7 +31,7 @@ const getSubCategories = asyncHandler(async (req, res) => {
     const page = req.query.page * 1 || 1;
     const limit = req.query.limit * 1 || 5;
     const skip = (page - 1) * limit;
-    console.log(req.params);
+    // console.log(req.params);
 
     const subCategories = await SubCategoryModel.find(req.filterObj).skip(skip).limit(limit).populate('category');
 
