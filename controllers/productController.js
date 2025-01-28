@@ -9,11 +9,37 @@ const ApiError = require('../utils/apiError');
  * @access   Public
  ****************************************/
 const getProducts = asyncHandler(async (req, res) => {
+    // 1- Filtering
+    const queryStringObj = {...req.query};
+    const excludesFields = ['page', 'sort', 'limit', 'field'];
+    excludesFields.forEach((field) => delete queryStringObj[field]);
+
+    // console.log(req.query);
+    // console.log(queryStringObj);
+
+    // Apply filtration
+    let queryStr = JSON.stringify(queryStringObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+
+    // console.log(queryStringObj);
+    // console.log(JSON.parse(queryStr));
+
+    // 2- Pagination
     const page = req.query.page * 1 || 1;
     const limit = req.query.limit * 1 || 5;
     const skip = (page - 1) * limit;
 
-    const products = await ProductModel.find({}).skip(skip).limit(limit).populate({path: 'category', select: 'name'});
+    // Build query
+    const mongooseQuery = ProductModel.find(JSON.parse(queryStr))
+        // price: req.query.price,
+        // ratingsAverage: req.query.ratingsAverage,
+        .skip(skip)
+        .limit(limit)
+        .populate({path: 'category', select: 'name'});
+    // .where('price').equals(req.query.price)
+
+    // Execute query
+    const products = await mongooseQuery;
 
     res.status(200).json({
         result: products.length,
