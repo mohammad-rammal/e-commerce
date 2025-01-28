@@ -11,7 +11,7 @@ const ApiError = require('../utils/apiError');
 const getProducts = asyncHandler(async (req, res) => {
     // 1- Filtering
     const queryStringObj = {...req.query};
-    const excludesFields = ['page', 'sort', 'limit', 'field'];
+    const excludesFields = ['page', 'sort', 'limit', 'fields', 'keyword'];
     excludesFields.forEach((field) => delete queryStringObj[field]);
 
     // console.log(req.query);
@@ -30,13 +30,43 @@ const getProducts = asyncHandler(async (req, res) => {
     const skip = (page - 1) * limit;
 
     // Build query
-    const mongooseQuery = ProductModel.find(JSON.parse(queryStr))
+    let mongooseQuery = ProductModel.find(JSON.parse(queryStr))
         // price: req.query.price,
         // ratingsAverage: req.query.ratingsAverage,
         .skip(skip)
         .limit(limit)
         .populate({path: 'category', select: 'name'});
     // .where('price').equals(req.query.price)
+
+    //3- Sorting
+    // + Ascending 0 (oldest) -> 10 (newest)
+    if (req.query.sort) {
+        // price, -solid => [price, -solid] => price -solid
+        const sortBy = req.query.sort.split(',').join(' ');
+        mongooseQuery = mongooseQuery.sort(sortBy);
+    } else {
+        mongooseQuery = mongooseQuery.sort('-createdAt');
+    }
+
+    // 4- Fields Limiting
+    if (req.query.fields) {
+        const fieldsLimit = req.query.fields.split(',').join(' ');
+        mongooseQuery = mongooseQuery.select(fieldsLimit);
+    } else {
+        mongooseQuery = mongooseQuery.select('-__v');
+    }
+
+    // 5- Searching
+    if (req.query.keyword) {
+        const query = {};
+        // i : not case sensitive
+        query.$or = [
+            {title: {$regex: req.query.keyword, $options: 'i'}},
+            {description: {$regex: req.query.keyword, $options: 'i'}},
+        ];
+
+        mongooseQuery = mongooseQuery.find(query);
+    }
 
     // Execute query
     const products = await mongooseQuery;
