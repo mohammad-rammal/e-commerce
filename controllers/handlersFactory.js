@@ -4,11 +4,11 @@ const ApiFeatures = require('../utils/apiFeatures');
 
 exports.deleteOne = (ModelName) =>
     asyncHandler(async (req, res, next) => {
-        const {idC} = req.params;
-        const document = await ModelName.findByIdAndDelete(idC);
+        const {id} = req.params;
+        const document = await ModelName.findByIdAndDelete(id);
 
         if (!document) {
-            return next(new ApiError(`No document for this ID: ${idC}`, 404));
+            return next(new ApiError(`No document for this ID: ${id}`, 404));
         }
         res.status(204).send();
     });

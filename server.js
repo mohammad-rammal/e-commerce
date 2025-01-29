@@ -1,3 +1,5 @@
+const path = require('path');
+
 const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
@@ -21,6 +23,9 @@ const app = express();
 // Middlewares
 // parsing (encoded string to js object)
 app.use(express.json());
+
+// Serve images
+app.use(express.static(path.join(__dirname, 'uploads')));
 
 // Logger
 if (process.env.NODE_ENV === 'Development') {
