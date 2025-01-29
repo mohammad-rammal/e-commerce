@@ -20,7 +20,7 @@ const router = express.Router();
 router.use('/:categoryId/subCategories', subCategoriesRoute);
 router.route('/').get(getCategories).post(createCategoryValidator, createCategory);
 router
-    .route('/:idC')
+    .route('/:id')
     .get(getCategoryValidator, getCategory)
     .put(updateCategoryValidator, updateCategory)
     .delete(deleteCategoryValidator, deleteCategory);

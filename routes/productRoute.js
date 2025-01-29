@@ -17,7 +17,7 @@ const router = express.Router();
 
 router.route('/').get(getProducts).post(createProductValidator, createProduct);
 router
-    .route('/:idP')
+    .route('/:id')
     .get(getProductValidator, getProduct)
     .put(updateProductValidator, updateProduct)
     .delete(deleteProductValidator, deleteProduct);

@@ -1,4 +1,5 @@
-const {check} = require('express-validator');
+const slugify = require('slugify');
+const {check, body} = require('express-validator');
 const validatorMiddleware = require('../../middlewares/validatorMiddleware');
 
 // Separation of concern
@@ -6,8 +7,13 @@ const validatorMiddleware = require('../../middlewares/validatorMiddleware');
 //
 exports.getCategoryValidator = [
     // 1- rules
-    check('idC').isMongoId().withMessage('Invalid Category ID Format'),
-
+    check('id')
+        .isMongoId()
+        .withMessage('Invalid Category ID Format')
+        .custom((val, {req}) => {
+            req.body.slug = slugify(val);
+            return true;
+        }),
     // 2- middleware to catch errors from rules if exist
     validatorMiddleware,
 ];
@@ -25,13 +31,16 @@ exports.createCategoryValidator = [
 ];
 
 exports.updateCategoryValidator = [
-    check('idC').isMongoId().withMessage('Invalid Category ID Format'),
-
+    check('id').isMongoId().withMessage('Invalid Category ID Format'),
+    body('name').custom((val, {req}) => {
+        req.body.slug = slugify(val);
+        return true;
+    }),
     validatorMiddleware,
 ];
 
 exports.deleteCategoryValidator = [
-    check('idC').isMongoId().withMessage('Invalid Category ID Format'),
+    check('id').isMongoId().withMessage('Invalid Category ID Format'),
 
     validatorMiddleware,
 ];

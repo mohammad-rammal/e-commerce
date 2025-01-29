@@ -11,7 +11,7 @@ const router = express.Router();
 
 router.route('/').get(getBrands).post(createBrandValidator, createBrand);
 router
-    .route('/:idC')
+    .route('/:id')
     .get(getBrandValidator, getBrand)
     .put(updateBrandValidator, updateBrand)
     .delete(deleteBrandValidator, deleteBrand);

@@ -24,7 +24,7 @@ router
     .get(createFilterObject, getSubCategories)
     .post(setCategoryIdToBody, createSubCategoryValidator, createSubCategory);
 router
-    .route('/:idC')
+    .route('/:id')
     .get(getSubCategoryValidator, getSubCategory)
     .put(updateSubCategoryValidator, updateSubCategory)
     .delete(deleteSubCategoryValidator, deleteSubCategory);
