@@ -34,8 +34,10 @@ const {uploadSingleImage} = require('../middlewares/uploadImageMiddleware');
 // const upload = multer({storage: multerStorage, fileFilter: multerFilter});
 // // const upload = multer({dest: 'uploads/categories'});
 
+// Upload single image
 const uploadCategoryImage = uploadSingleImage('image');
 
+// Image processing
 const resizeImage = asyncHandler(async (req, res, next) => {
     const filename = `category-${uuidv4()}-${Date.now()}.jpeg`;
     await sharp(req.file.buffer)

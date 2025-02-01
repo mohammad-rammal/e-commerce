@@ -18,8 +18,25 @@ const categorySchema = new mongoose.Schema(
     {timestamps: true},
 );
 
-const CategoryModel = mongoose.model('Category', categorySchema);
+// return image base url + image name
+const setImageURL = (doc) => {
+    if (doc.image) {
+        const imageUrl = `${process.env.BASE_URL}/categories/${doc.image}`;
+        doc.image = imageUrl;
+    }
+};
 
+// Create
+categorySchema.post('save', (doc) => {
+    setImageURL(doc);
+});
+
+// FindOne,FindAll, Update
+categorySchema.post('init', (doc) => {
+    setImageURL(doc);
+});
+
+const CategoryModel = mongoose.model('Category', categorySchema);
 // categorySchema.pre('save', function (next) {
 //     console.log(this);
 //     this.slug = slugify(this.name, {lower: true});

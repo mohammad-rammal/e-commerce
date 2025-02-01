@@ -18,6 +18,24 @@ const brandSchema = new mongoose.Schema(
     {timestamps: true},
 );
 
+// return image base url + image name
+const setImageURL = (doc) => {
+    if (doc.image) {
+        const imageUrl = `${process.env.BASE_URL}/brands/${doc.image}`;
+        doc.image = imageUrl;
+    }
+};
+
+// Create
+brandSchema.post('save', (doc) => {
+    setImageURL(doc);
+});
+
+// FindOne,FindAll, Update
+brandSchema.post('init', (doc) => {
+    setImageURL(doc);
+});
+
 const BrandModel = mongoose.model('Brand', brandSchema);
 
 module.exports = BrandModel;
