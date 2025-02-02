@@ -1,4 +1,6 @@
 const slugify = require('slugify');
+const bcrypt = require('bcryptjs');
+
 const {check, body} = require('express-validator');
 const validatorMiddleware = require('../../middlewares/validatorMiddleware');
 const UserModel = require('../../models/userModel');
@@ -53,6 +55,7 @@ exports.createUserValidator = [
 ];
 
 exports.updateUserValidator = [
+    // check: for params and body
     check('id').isMongoId().withMessage('Invalid User ID Format'),
     body('name')
         .optional()
@@ -60,6 +63,56 @@ exports.updateUserValidator = [
             req.body.slug = slugify(val);
             return true;
         }),
+
+    check('email')
+        .notEmpty()
+        .withMessage('Email required!')
+        .isEmail()
+        .withMessage('Invalid email address!')
+        .custom((val) =>
+            UserModel.findOne({email: val}).then((user) => {
+                if (user) {
+                    return Promise.reject(new Error('Email already exists!'));
+                }
+            }),
+        ),
+
+    check('phone').optional().isMobilePhone(['ar-LB', 'en-US']).withMessage('Invalid phone number!'),
+
+    check('profileImg').optional(),
+
+    check('role').optional(),
+
+    validatorMiddleware,
+];
+
+exports.changeUserPasswordValidator = [
+    check('id').isMongoId().withMessage('Invalid User ID Format'),
+    body('currentPassword').notEmpty().withMessage('Must enter your current password!'),
+    body('passwordConfirm').notEmpty().withMessage('Password confirmation required!'),
+    body('password')
+        .notEmpty()
+        .withMessage('Password required!')
+        // val is the password
+        .custom(async (val, {req}) => {
+            // 1- Verify current password
+            const user = await UserModel.findById(req.params.id);
+            if (!user) {
+                throw new Error('The user is not exist for this ID!');
+            }
+            const isCorrectPassword = await bcrypt.compare(req.body.currentPassword, user.password);
+
+            if (!isCorrectPassword) {
+                throw new Error('Incorrect current password!');
+            }
+
+            // 2- Verify password confirm
+            if (val !== req.body.passwordConfirm) {
+                throw new Error('Password confirmation incorrect');
+            }
+            return true;
+        }),
+
     validatorMiddleware,
 ];
 

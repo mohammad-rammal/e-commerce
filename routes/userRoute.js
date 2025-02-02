@@ -7,15 +7,19 @@ const {
     getUser,
     updateUser,
     deleteUser,
+    changeUserPassword,
 } = require('../controllers/userController');
 const {
     createUserValidator,
     deleteUserValidator,
     updateUserValidator,
     getUserValidator,
+    changeUserPasswordValidator,
 } = require('../utils/validators/userValidator');
 
 const router = express.Router();
+
+router.put('/changePassword/:id', changeUserPasswordValidator, changeUserPassword);
 
 router.route('/').get(getUsers).post(uploadUserImage, resizeImage, createUserValidator, createUser);
 router
