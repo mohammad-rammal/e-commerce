@@ -1,9 +1,12 @@
+const crypto = require('crypto');
+
 const asyncHandler = require('express-async-handler');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
 const UserModel = require('../models/userModel');
 const ApiError = require('../utils/apiError');
+const sendEmail = require('../utils/sendEmail');
 
 const createToken = (payload) => {
     return jwt.sign({userId: payload}, process.env.JWT_SECRET_KEY, {expiresIn: process.env.JWT_EXPIRE_TIME});
@@ -102,7 +105,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
 });
 
 /****************************************
- * @desc  Verify if the user is logged in
+ * @desc  Authorization (User Permissions)
  ****************************************/
 exports.allowedTo = (...roles) =>
     // excluders
@@ -115,3 +118,56 @@ exports.allowedTo = (...roles) =>
         }
         next();
     });
+
+/****************************************
+ * @desc     Forgot Password
+ * @route    POST /api/v1/auth/forgotPassword
+ * @access   Public
+ ****************************************/
+exports.forgetPassword = asyncHandler(async (req, res, next) => {
+    // 1- Get user by email
+    const user = await UserModel.findOne({
+        email: req.body.email,
+    });
+    if (!user) {
+        return next(new ApiError(`There is no user with this email: ${req.body.email}`, 404));
+    }
+
+    // 2- If user exist, Generate hash reset random 6 digits and save it in db
+    const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const hashedResetCode = crypto.createHmac('sha256', process.env.SECRET_CRYPTO).update(resetCode).digest('hex');
+
+    // Save hashed password reset code into db with expiration time 10m
+    user.passwordResetCode = hashedResetCode;
+    user.passwordResetExpires = Date.now() + 10 * 60 * 1000; // 10m
+    user.passwordResetVerified = false;
+
+    await user.save();
+    const message = `
+                    Hi ${user.name}, \n \n
+                    We received a request. \n
+                    ${resetCode} \n \n
+                    Enter this code please.
+                    `;
+
+    // 3- Send the reset code via email
+    try {
+        await sendEmail({
+            email: user.email,
+            subject: 'Your password reset code (valid for 10 min)',
+            message,
+        });
+    } catch (error) {
+        user.passwordResetCode = undefined;
+        user.passwordResetExpires = undefined;
+        user.passwordResetVerified = undefined;
+
+        await user.save();
+        return next(new ApiError('There is an error in sending email', 500));
+    }
+
+    res.status(200).json({
+        status: 'Success',
+        message: 'Reset code sent to email',
+    });
+});
