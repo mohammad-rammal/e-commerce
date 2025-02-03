@@ -16,11 +16,18 @@ const {
     resizeImage,
 } = require('../controllers/categoryController');
 
+const AuthService = require('../controllers/authController');
+
 const router = express.Router();
 
 // for mergeParams use
 router.use('/:categoryId/subCategories', subCategoriesRoute);
-router.route('/').get(getCategories).post(uploadCategoryImage, resizeImage, createCategoryValidator, createCategory);
+
+router
+    .route('/')
+    .get(getCategories)
+    .post(AuthService.protect, uploadCategoryImage, resizeImage, createCategoryValidator, createCategory);
+
 router
     .route('/:id')
     .get(getCategoryValidator, getCategory)
