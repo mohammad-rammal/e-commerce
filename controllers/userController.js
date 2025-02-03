@@ -31,28 +31,28 @@ exports.resizeImage = asyncHandler(async (req, res, next) => {
 /****************************************
  * @desc     Get list of users
  * @route    GET /api/v1/users
- * @access   Private
+ * @access   Private/Admin
  ****************************************/
 exports.getUsers = factory.getAll(UserModel);
 
 /****************************************
  * @desc     Get specific user by ID
  * @route    GET /api/v1/users/:id
- * @access   Private
+ * @access   Private/Admin
  ****************************************/
 exports.getUser = factory.getOne(UserModel);
 
 /****************************************
  * @desc     Create user
  * @route    POST /api/v1/users
- * @access   Private
+ * @access   Private/Admin
  ****************************************/
 exports.createUser = factory.createOne(UserModel);
 
 /****************************************
  * @desc     Update specific user
  * @route    PUT /api/v1/users/:id
- * @access   Private
+ * @access   Private/Admin
  ****************************************/
 exports.updateUser = asyncHandler(async (req, res, next) => {
     const document = await UserModel.findByIdAndUpdate(
@@ -78,7 +78,7 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
 /****************************************
  * @desc     Update password for specific user
  * @route    PUT /api/v1/users/:id
- * @access   Private
+ * @access   Private/Admin
  ****************************************/
 exports.changeUserPassword = asyncHandler(async (req, res, next) => {
     const document = await UserModel.findByIdAndUpdate(
@@ -101,6 +101,6 @@ exports.changeUserPassword = asyncHandler(async (req, res, next) => {
 /****************************************
  * @desc     Delete specific user
  * @route    DELETE /api/v1/users/:id
- * @access   Private
+ * @access   Private/Admin
  ****************************************/
 exports.deleteUser = factory.deleteOne(UserModel);

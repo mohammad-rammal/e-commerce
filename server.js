@@ -52,16 +52,31 @@ app.all('*', (req, res, next) => {
 app.use(globalError);
 
 // Port Connection
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8000;
 const server = app.listen(PORT, () => {
     console.log(`App running on port ${PORT}...👍`);
 });
 
-// Events For Errors Outside Express (Async)
-process.on('unhandledRejection', (err) => {
-    console.error(`UnhandledRejection Errors: ${err.name} | ${err.message}`);
+const shutdownServer = () => {
+    if (server) {
+        console.log('Shutting down server...');
+        server.close(() => {
+            console.log('Server closed.');
+            process.exit(0);
+        });
+    }
+};
+
+// Handle graceful shutdown when the process is terminated (e.g., by hosting providers)
+process.on('SIGTERM', shutdownServer);
+
+// Handle graceful shutdown when manually stopping the server (Ctrl + C)
+process.on('SIGINT', shutdownServer);
+
+// Handles shutdown when hosting providers send termination signals
+process.on('SIGTERM', () => {
+    console.log('SIGTERM received. Shutting down server...');
     server.close(() => {
-        console.error(`Shutting down...💥`);
-        process.exit(1);
+        console.log('Server closed.');
     });
 });
