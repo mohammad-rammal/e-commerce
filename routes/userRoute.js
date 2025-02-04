@@ -8,6 +8,10 @@ const {
     updateUser,
     deleteUser,
     changeUserPassword,
+    getLoggedUserData,
+    updateLoggedUserPassword,
+    updateLoggedUserData,
+    deleteLoggedUserData,
 } = require('../controllers/userController');
 const {
     createUserValidator,
@@ -15,36 +19,29 @@ const {
     updateUserValidator,
     getUserValidator,
     changeUserPasswordValidator,
+    updateLoggedUserValidator,
 } = require('../utils/validators/userValidator');
 
 const authService = require('../controllers/authController');
 
 const router = express.Router();
 
-router.put('/changePassword/:id', changeUserPasswordValidator, changeUserPassword);
+router.use(authService.protect);
+router.get('/getMe', getLoggedUserData, getUser);
+router.put('/changeMyPassword', updateLoggedUserPassword);
+router.put('/updateMe', updateLoggedUserData);
+router.delete('/deleteMe', deleteLoggedUserData);
 
+router.use(authService.allowedTo('admin'));
+router.put('/changePassword/:id', changeUserPasswordValidator, updateLoggedUserValidator, changeUserPassword);
 router
     .route('/')
-    .get(authService.protect, authService.allowedTo('admin'), getUsers)
-    .post(
-        authService.protect,
-        authService.allowedTo('admin'),
-        uploadUserImage,
-        resizeImage,
-        createUserValidator,
-        createUser,
-    );
+    .get(authService.allowedTo('admin'), getUsers)
+    .post(uploadUserImage, resizeImage, createUserValidator, createUser);
 router
     .route('/:id')
-    .get(authService.protect, authService.allowedTo('admin'), getUserValidator, getUser)
-    .put(
-        authService.protect,
-        authService.allowedTo('admin'),
-        uploadUserImage,
-        resizeImage,
-        updateUserValidator,
-        updateUser,
-    )
-    .delete(authService.protect, authService.allowedTo('admin'), deleteUserValidator, deleteUser);
+    .get(getUserValidator, getUser)
+    .put(uploadUserImage, resizeImage, updateUserValidator, updateUser)
+    .delete(deleteUserValidator, deleteUser);
 
 module.exports = router;

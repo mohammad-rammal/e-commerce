@@ -7,6 +7,7 @@ const {uploadSingleImage} = require('../middlewares/uploadImageMiddleware');
 const UserModel = require('../models/userModel');
 const factory = require('./handlersFactory');
 const ApiError = require('../utils/apiError');
+const createToken = require('../utils/createToken');
 
 exports.uploadUserImage = uploadSingleImage('profileImg');
 
@@ -104,3 +105,74 @@ exports.changeUserPassword = asyncHandler(async (req, res, next) => {
  * @access   Private/Admin
  ****************************************/
 exports.deleteUser = factory.deleteOne(UserModel);
+
+/****************************************
+ * @desc     Get Logged User Data
+ * @route    GET /api/v1/users/getMe
+ * @access   Private/Logged (Protect)
+ ****************************************/
+exports.getLoggedUserData = asyncHandler(async (req, res, next) => {
+    req.params.id = req.user._id;
+    next();
+});
+
+/****************************************
+ * @desc     Update Logged User Password
+ * @route    PUT /api/v1/users/updateMyPassword
+ * @access   Private/Logged (Protect)
+ ****************************************/
+exports.updateLoggedUserPassword = asyncHandler(async (req, res, next) => {
+    // 1- Update user password based user payload (req.user._id)
+    const user = await UserModel.findByIdAndUpdate(
+        req.user._id,
+        {
+            password: await bcrypt.hash(req.body.password, 12),
+            passwordChangedAt: Date.now(),
+        },
+        {new: true},
+    );
+
+    // 2- Generate token
+    const token = createToken(user._id);
+
+    res.status(200).json({
+        data: user,
+        token,
+    });
+});
+
+/****************************************
+ * @desc     Update Logged User Data (Without Password, Role)
+ * @route    PUT /api/v1/users/updateMe
+ * @access   Private/Logged (Protect)
+ ****************************************/
+exports.updateLoggedUserData = asyncHandler(async (req, res, next) => {
+    const updatedUser = await UserModel.findByIdAndUpdate(
+        req.user._id,
+        {
+            name: req.body.name,
+            email: req.body.email,
+            phone: req.body.phone,
+        },
+        {new: true},
+    );
+
+    res.status(200).json({
+        data: updatedUser,
+    });
+});
+
+/****************************************
+ * @desc     Deactivate Logged User
+ * @route    DELETE /api/v1/users/deleteMe
+ * @access   Private/Logged (Protect)
+ ****************************************/
+exports.deleteLoggedUserData = asyncHandler(async (req, res, next) => {
+    await UserModel.findByIdAndUpdate(req.user._id, {
+        active: false,
+    });
+
+    res.status(204).json({
+        message: 'Success',
+    });
+});
