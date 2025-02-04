@@ -171,3 +171,67 @@ exports.forgetPassword = asyncHandler(async (req, res, next) => {
         message: 'Reset code sent to email',
     });
 });
+
+/****************************************
+ * @desc     Verify Password Reset Code
+ * @route    POST /api/v1/auth/verifyPasswordResetCode
+ * @access   Public
+ ****************************************/
+exports.verifyPasswordResetCode = asyncHandler(async (req, res, next) => {
+    // 1- Get user based on reset code
+    const hashedResetCode = crypto
+        .createHmac('sha256', process.env.SECRET_CRYPTO)
+        .update(req.body.resetCode)
+        .digest('hex');
+
+    const user = await UserModel.findOne({
+        passwordResetCode: hashedResetCode,
+        passwordResetExpires: {$gt: Date.now()},
+    });
+    if (!user) {
+        return next(new ApiError('Invalid reset code or expired!', 400));
+    }
+
+    // 2- Reset code valid
+    user.passwordResetVerified = true;
+    await user.save;
+
+    res.status(200).json({
+        status: 'Success',
+        message: 'Success verify password reset code',
+    });
+});
+
+/****************************************
+ * @desc     Reset Password
+ * @route    POST /api/v1/auth/resetPassword
+ * @access   Public
+ ****************************************/
+exports.resetPassword = asyncHandler(async (req, res, next) => {
+    // 1- Get user based on email
+    const user = await UserModel.findOne({email: req.body.email});
+
+    if (!user) {
+        return next(new ApiError(`There is no user for this email: ${req.body.email}`, 404));
+    }
+
+    // 2- Check if reset code verified
+    if (!user.passwordResetVerified) {
+        return next(new ApiError('Reset code not verified, please check your emailagain..'), 400);
+    }
+
+    user.password = req.body.newPassword;
+
+    user.passwordResetCode = undefined;
+    user.passwordResetExpires = undefined;
+    user.passwordResetVerified = undefined;
+
+    await user.save();
+
+    // 3- If everything is ok, generate new token
+    const token = createToken(user._id);
+
+    res.status(200).json({
+        token,
+    });
+});
