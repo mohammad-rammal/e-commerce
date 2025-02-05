@@ -38,6 +38,14 @@ const userSchema = new mongoose.Schema(
             type: Boolean,
             default: true,
         },
+        // array of products
+        // child reference (one to many)
+        wishlist: [
+            {
+                type: mongoose.Schema.ObjectId,
+                ref: 'Product',
+            },
+        ],
 
         // Embedded Document: for limited or small data
         // addresses: [
