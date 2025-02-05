@@ -1,19 +1,6 @@
 const asyncHandler = require('express-async-handler');
 
 const UserModel = require('../models/userModel');
-const ApiError = require('../utils/apiError');
-
-/****************************************
- * @desc     Get list of users
- * @route    GET /api/v1/users
- * @access   Private/Admin
- ****************************************/
-
-/****************************************
- * @desc     Get specific user by ID
- * @route    GET /api/v1/users/:id
- * @access   Private/Admin
- ****************************************/
 
 /****************************************
  * @desc     Add product to wishlist

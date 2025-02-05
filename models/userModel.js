@@ -48,13 +48,16 @@ const userSchema = new mongoose.Schema(
         ],
 
         // Embedded Document: for limited or small data
-        // addresses: [
-        //     {
-        //         title: String,
-        //         postalCode: Number,
-        //         street: String,
-        //     },
-        // ],
+        addresses: [
+            {
+                id: {type: mongoose.Schema.Types.ObjectId},
+                alias: String,
+                details: String,
+                phone: String,
+                city: String,
+                postalCode: Number,
+            },
+        ],
     },
     {timestamps: true},
 );
