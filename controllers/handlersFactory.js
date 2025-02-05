@@ -10,6 +10,10 @@ exports.deleteOne = (ModelName) =>
         if (!document) {
             return next(new ApiError(`No document for this ID: ${id}`, 404));
         }
+
+        // (For Aggregation) Trigger "remove" event when update document
+        document.remove();
+
         res.status(204).send();
     });
 
@@ -20,6 +24,10 @@ exports.updateOne = (ModelName) =>
         if (!document) {
             return next(new ApiError(`No document for this ID: ${req.params.id}`, 404));
         }
+
+        // (For Aggregation) Trigger "save" event when update document
+        document.save();
+
         res.status(200).json({
             data: document,
         });
