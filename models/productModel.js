@@ -69,10 +69,28 @@ const productSchema = new mongoose.Schema(
             type: Number,
             default: 0,
         },
+        // We will make Virtual Populate
+        // reviewsField: [
+        //     {
+        //         type: mongoose.Schema.ObjectId,
+        //         ref: 'Review',
+        //     },
+        // ],
     },
 
-    {timestamps: true},
+    {
+        timestamps: true,
+        toJSON: {virtuals: true},
+        toObject: {virtuals: true},
+    },
 );
+
+// virtual populate
+productSchema.virtual('reviews', {
+    ref: 'Review',
+    foreignField: 'product',
+    localField: '_id',
+});
 
 // mongoose query middleware
 productSchema.pre(/^find/, function (next) {

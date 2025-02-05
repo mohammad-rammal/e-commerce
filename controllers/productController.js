@@ -53,7 +53,7 @@ exports.getProducts = factory.getAll(ProductModel, 'Products');
  * @route    GET /api/v1/products/:id
  * @access   Public
  ****************************************/
-exports.getProduct = factory.getOne(ProductModel);
+exports.getProduct = factory.getOne(ProductModel, 'reviews');
 
 /****************************************
  * @desc     Create product
