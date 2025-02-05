@@ -1,4 +1,8 @@
 const express = require('express');
+
+const reviewsRoute = require('./reviewRoute');
+const authService = require('../controllers/authController');
+
 const {
     getProducts,
     createProduct,
@@ -15,9 +19,10 @@ const {
     createProductValidator,
 } = require('../utils/validators/productValidator');
 
-const authService = require('../controllers/authController');
-
 const router = express.Router();
+
+// for mergeParams use (Nested Route) Parent
+router.use('/:productId/reviews', reviewsRoute);
 
 router
     .route('/')

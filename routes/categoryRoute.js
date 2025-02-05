@@ -20,7 +20,7 @@ const authService = require('../controllers/authController');
 
 const router = express.Router();
 
-// for mergeParams use
+// for mergeParams use (Nested Route)
 router.use('/:categoryId/subCategories', subCategoriesRoute);
 
 router
