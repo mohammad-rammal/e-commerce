@@ -12,7 +12,9 @@ exports.deleteOne = (ModelName) =>
         }
 
         // (For Aggregation) Trigger "remove" event when update document
-        document.remove();
+        if (document.product) {
+            await document.constructor.calcAverageRatingsAndQuantity(document.product);
+        }
 
         res.status(204).send();
     });
