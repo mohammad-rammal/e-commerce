@@ -8,6 +8,7 @@ const {
     filterOrderForLoggedUser,
     updateOrderToPaid,
     updateOrderToDelivered,
+    checkoutSession,
 } = require('../controllers/OrderController');
 
 const router = express.Router();
@@ -19,5 +20,7 @@ router.get('/', authService.allowedTo('user', 'manager', 'admin'), filterOrderFo
 router.get('/:id', authService.allowedTo('user'), findSpecificOrder);
 router.put('/:id/pay', authService.allowedTo('manager', 'admin'), updateOrderToPaid);
 router.put('/:id/deliver', authService.allowedTo('manager', 'admin'), updateOrderToDelivered);
+
+router.get('/checkout-session/:cartId', authService.allowedTo('user'), checkoutSession);
 
 module.exports = router;

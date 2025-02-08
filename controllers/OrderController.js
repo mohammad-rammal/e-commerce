@@ -1,5 +1,5 @@
 const asyncHandler = require('express-async-handler');
-
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const factory = require('./handlersFactory');
 const ApiError = require('../utils/apiError');
 const CartModel = require('../models/cartModel');
@@ -121,5 +121,54 @@ exports.updateOrderToDelivered = asyncHandler(async (req, res, next) => {
         status: 'Success',
         message: 'Delivered successfully.',
         data: updateOrder,
+    });
+});
+
+/****************************************
+ * @desc     Get checkout session from stripe and send it as response
+ * @route    GET /api/v1/orders/checkout-session/:cartId
+ * @access   Private/ User (Protect)
+ ****************************************/
+exports.checkoutSession = asyncHandler(async (req, res, next) => {
+    const taxPrice = 0;
+    const shippingPrice = 0;
+
+    // 1- Get cart depend on cartId
+    const cart = await CartModel.findById(req.params.cartId);
+    if (!cart) {
+        return next(new ApiError(`There is no cart with id ${req.params.cartId}`, 404));
+    }
+
+    // 2- Get order price depend on cart price (check if coupon applied)
+    const cartPrice = cart.totalPriceAfterDiscount ? cart.totalPriceAfterDiscount : cart.totalCartPrice;
+    const totalOrderPrice = cartPrice + taxPrice + shippingPrice;
+
+    // 3- Create stripe checkout session
+
+    const session = await stripe.checkout.sessions.create({
+        line_items: [
+            {
+                price_data: {
+                    currency: 'usd',
+                    product_data: {
+                        name: `Order from ${req.user.name}`,
+                    },
+                    unit_amount: totalOrderPrice * 100, // Stripe requires amount in cents
+                },
+                quantity: 1,
+            },
+        ],
+        mode: 'payment',
+        success_url: `${req.protocol}://${req.get('host')}/orders`,
+        cancel_url: `${req.protocol}://${req.get('host')}/cart`,
+        customer_email: req.user.email,
+        client_reference_id: req.params.cartId, // or: cart._id
+        metadata: req.body.shippingAddress,
+    });
+
+    // 4- Send session to response
+    res.status(200).json({
+        status: 'Success',
+        session,
     });
 });
