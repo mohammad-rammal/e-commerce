@@ -75,3 +75,51 @@ exports.findAllOrders = factory.getAll(OrderModel);
  * @access   Private/ User (Protect)
  ****************************************/
 exports.findSpecificOrder = factory.getOne(OrderModel);
+
+/****************************************
+ * @desc     Update order paid status to paid (true)
+ * @route    GET /api/v1/orders/:id/pay
+ * @access   Private/ Admin-Manager (Protect)
+ ****************************************/
+exports.updateOrderToPaid = asyncHandler(async (req, res, next) => {
+    const order = await OrderModel.findById(req.params.id);
+    if (!order) {
+        return next(new ApiError(`There is no such order with id ${req.params.id}`, 404));
+    }
+
+    // Update order to paid
+    order.isPaid = true;
+    order.paidAt = Date.now();
+
+    const updateOrder = await order.save();
+
+    res.status(201).json({
+        status: 'Success',
+        message: 'Paid successfully.',
+        data: updateOrder,
+    });
+});
+
+/****************************************
+ * @desc     Update order delivered status
+ * @route    GET /api/v1/orders/:id/deliver
+ * @access   Private/ Admin-Manager (Protect)
+ ****************************************/
+exports.updateOrderToDelivered = asyncHandler(async (req, res, next) => {
+    const order = await OrderModel.findById(req.params.id);
+    if (!order) {
+        return next(new ApiError(`There is no such order with id ${req.params.id}`, 404));
+    }
+
+    // Update order to paid
+    order.isDelivered = true;
+    order.DeliveredAt = Date.now();
+
+    const updateOrder = await order.save();
+
+    res.status(201).json({
+        status: 'Success',
+        message: 'Delivered successfully.',
+        data: updateOrder,
+    });
+});
