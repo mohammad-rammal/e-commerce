@@ -21,8 +21,6 @@ const createCardOrder = async (session) => {
 
     const cart = await CartModel.findById(cartId);
     const user = await UserModel.findOne({email: session.customer_email});
-    console.log('cart', cart);
-    console.log('user', user);
 
     // Create order with default payment method type card
     const order = await OrderModel.create({
@@ -34,7 +32,6 @@ const createCardOrder = async (session) => {
         paidAt: Date.now(),
         paymentMethodType: 'card',
     });
-    console.log('order', order);
 
     // After creating order, will decrement product quantity, will increment product sold
     if (order) {
