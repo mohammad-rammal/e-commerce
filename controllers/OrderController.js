@@ -174,12 +174,13 @@ exports.checkoutSession = asyncHandler(async (req, res, next) => {
 });
 
 /****************************************
- * @desc     Stripe
+ * @desc     Stripe webhook handler
  * @route    GET /api/v1/orders/checkout-session/:cartId
  * @access   Private/ User (Protect)
  ****************************************/
 exports.webhookCheckout = asyncHandler(async (req, res, next) => {
     const sig = req.headers['stripe-signature'];
+    console.log('Stripe Webhook');
 
     let event;
 
@@ -191,5 +192,6 @@ exports.webhookCheckout = asyncHandler(async (req, res, next) => {
 
     if (event.type === 'checkout.session.completed') {
         console.log('Create Order Here...');
+        console.log(event.data.object.client_reference_id);
     }
 });
