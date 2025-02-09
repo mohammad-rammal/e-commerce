@@ -20,7 +20,7 @@ const createCardOrder = async (session) => {
     const orderPrice = session.amount_total / 100;
 
     const cart = await CartModel.findById(cartId);
-    const user = await UserModel.findOne({email: session.costumer_email});
+    const user = await UserModel.findOne({email: session.customer_email});
     console.log('cart', cart);
     console.log('user', user);
 
