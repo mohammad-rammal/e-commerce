@@ -210,8 +210,8 @@ exports.checkoutSession = asyncHandler(async (req, res, next) => {
 });
 
 /****************************************
- * @desc     Stripe webhook handler
- * @route    GET /api/v1/orders/checkout-session/:cartId
+ * @desc     Webhook will run when stripe payment success paid
+ * @route    POST /webhook-checkout
  * @access   Private/ User (Protect)
  ****************************************/
 exports.webhookCheckout = asyncHandler(async (req, res, next) => {
@@ -223,16 +223,18 @@ exports.webhookCheckout = asyncHandler(async (req, res, next) => {
     try {
         event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
     } catch (err) {
+        console.log('Webhook signature verification failed:', err);
         return res.status(400).send(`Webhook Error: ${err.message}`);
     }
 
     if (event.type === 'checkout.session.completed') {
-        // console.log(event.data.object.client_reference_id);
-        // Create order
-        createCardOrder(event.data.object);
+        try {
+            await createCardOrder(event.data.object); // Make sure this is awaited
+        } catch (error) {
+            console.log('Error while creating order:', error);
+            return res.status(500).json({error: 'Failed to process order'});
+        }
     }
 
-    res.status(200).json({
-        received: true,
-    });
+    res.status(200).json({received: true});
 });
