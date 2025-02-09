@@ -16,11 +16,13 @@ exports.filterOrderForLoggedUser = asyncHandler(async (req, res, next) => {
 const createCardOrder = async (session) => {
     const cartId = session.client_reference_id;
     const shippingAddress = session.metadata;
-    console.log('Received data in createCardOrder:', session);
+
     const orderPrice = session.amount_total / 100;
 
     const cart = await CartModel.findById(cartId);
     const user = await UserModel.findOne({email: session.costumer_email});
+    console.log('cart', cart);
+    console.log('user', user);
 
     // Create order with default payment method type card
     const order = await OrderModel.create({
@@ -32,7 +34,7 @@ const createCardOrder = async (session) => {
         paidAt: Date.now(),
         paymentMethodType: 'card',
     });
-    console.log(order);
+    console.log('order', order);
 
     // After creating order, will decrement product quantity, will increment product sold
     if (order) {
@@ -231,7 +233,7 @@ exports.webhookCheckout = asyncHandler(async (req, res, next) => {
 
     if (event.type === 'checkout.session.completed') {
         try {
-            await createCardOrder(event.data.object); // Make sure this is awaited
+            await createCardOrder(event.data.object);
         } catch (error) {
             console.log('Error while creating order:', error);
             return res.status(500).json({error: 'Failed to process order'});
