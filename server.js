@@ -12,6 +12,7 @@ const dbConnection = require('./config/database');
 const mountRoutes = require('./routes');
 const ApiError = require('./utils/apiError');
 const globalError = require('./middlewares/errorMiddlewares');
+const {webhookCheckout} = require('./controllers/OrderController');
 
 // Connect to DB
 dbConnection();
@@ -23,8 +24,11 @@ const app = express();
 app.use(cors());
 app.options('*', cors());
 
-// Compression for all responses from req
+// Compress for all responses from req
 app.use(compression());
+
+// Checkout webhook
+app.post('webhook-checkout', express.raw({type: 'application/json'}), webhookCheckout);
 
 // Middlewares
 // parsing (encoded string to js object)
