@@ -16,6 +16,7 @@ exports.filterOrderForLoggedUser = asyncHandler(async (req, res, next) => {
 const createCardOrder = async (session) => {
     const cartId = session.client_reference_id;
     const shippingAddress = session.metadata;
+    console.log('Received data in createCardOrder:', session);
     const orderPrice = session.display_items[0].amount / 100;
 
     const cart = await CartModel.findById(cartId);
