@@ -32,6 +32,7 @@ const createCardOrder = async (session) => {
         paidAt: Date.now(),
         paymentMethodType: 'card',
     });
+    console.log(order);
 
     // After creating order, will decrement product quantity, will increment product sold
     if (order) {
