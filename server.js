@@ -3,13 +3,13 @@ const path = require('path');
 const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
+const cors = require('cors');
+const compression = require('compression');
 
 dotenv.config({path: 'config.env'});
 
 const dbConnection = require('./config/database');
-
 const mountRoutes = require('./routes');
-
 const ApiError = require('./utils/apiError');
 const globalError = require('./middlewares/errorMiddlewares');
 
@@ -18,6 +18,13 @@ dbConnection();
 
 // express app
 const app = express();
+
+// Enable other domains to access the this app (API)
+app.use(cors());
+app.options('*', cors());
+
+// Compression for all responses from req
+app.use(compression());
 
 // Middlewares
 // parsing (encoded string to js object)
