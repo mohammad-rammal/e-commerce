@@ -5,11 +5,47 @@ const ApiError = require('../utils/apiError');
 const CartModel = require('../models/cartModel');
 const OrderModel = require('../models/orderModel');
 const ProductModel = require('../models/productModel');
+const UserModel = require('../models/userModel');
 
 exports.filterOrderForLoggedUser = asyncHandler(async (req, res, next) => {
     if (req.user.role === 'user') req.filterObject = {user: req.user._id};
     next();
 });
+
+// no need for asyncHandler because not express middleware
+const createCardOrder = async (session) => {
+    const cartId = session.client_reference_id;
+    const shippingAddress = session.metadata;
+    const orderPrice = session.display_items[0].amount / 100;
+
+    const cart = await CartModel.findById(cartId);
+    const user = await UserModel.findOne({email: session.costumer_email});
+
+    // Create order with default payment method type card
+    const order = await OrderModel.create({
+        user: user._id,
+        cartItems: cart.cartItems,
+        shippingAddress,
+        totalOrderPrice: orderPrice,
+        isPaid: true,
+        paidAt: Date.now(),
+        paymentMethodType: 'card',
+    });
+
+    // After creating order, will decrement product quantity, will increment product sold
+    if (order) {
+        const bulkOption = cart.cartItems.map((item) => ({
+            updateOne: {
+                filter: {_id: item.product},
+                update: {$inc: {quantity: -item.quantity, sold: +item.quantity}},
+            },
+        }));
+        await ProductModel.bulkWrite(bulkOption, {});
+
+        // 5- Clear cart depend on cartId
+        await CartModel.findByIdAndDelete(cartId);
+    }
+};
 
 /****************************************
  * @desc     Create cash order
@@ -191,7 +227,12 @@ exports.webhookCheckout = asyncHandler(async (req, res, next) => {
     }
 
     if (event.type === 'checkout.session.completed') {
-        console.log('Create Order Here...');
-        console.log(event.data.object.client_reference_id);
+        // console.log(event.data.object.client_reference_id);
+        // Create order
+        createCardOrder(event.data.object);
     }
+
+    res.status(200).json({
+        received: true,
+    });
 });
