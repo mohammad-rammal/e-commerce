@@ -4,8 +4,9 @@ This project is an E-Commerce application with an English interface. It consists
 
 ## Project Structure
 
-E-Commerce Arabic/
-│
-├── backend/          # Backend API (Node.js / Express)
-├── frontend/         # Frontend UI (React)
+E-Commerce Arabic/  
+│  
+├── backend/          # Backend API (Node.js / Express)  
+├── frontend/         # Frontend UI (React)  
 └── start/            # Folder to run the app concurrently
+
