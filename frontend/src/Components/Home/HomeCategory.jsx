@@ -1,23 +1,40 @@
-import {Container, Row} from 'react-bootstrap';
+import {Container, Row, Spinner} from 'react-bootstrap';
 import SubTitle from '../utilities/SubTitle';
 import CategoryCard from '../Category/CategoryCard';
-
-import clothe from '../../assets/images/clothe.png';
-import cat2 from '../../assets/images/cat2.png';
-import laptop from '../../assets/images/laptop.png';
-import sale from '../../assets/images/sale.png';
-import pic from '../../assets/images/pic.png';
+import {useEffect} from 'react';
+import {useSelector, useDispatch} from 'react-redux';
+import {getAllCategory} from '../../redux/actions/categoryAction';
 
 const HomeCategory = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getAllCategory());
+  }, [dispatch]);
+
+  const category = useSelector((state) => state.allCategory.category);
+
+  const loading = useSelector((state) => state.allCategory.loading);
+
+  const colors = ['#d6eb77', '#9679ed', '#e2c08d', '#6ca9d2', '#c7a9e9', '#89f1af'];
+
   return (
     <Container>
       <SubTitle title="Categories" btnTitle="More" pathText="/allcategory" />
       <Row className="my-2 d-flex justify-content-between">
-        <CategoryCard title="Home Devices" img={laptop} background="#302713" />
-        <CategoryCard title="Clothes" img={clothe} background="#302713" />
-        <CategoryCard title="Makeups" img={cat2} background="#302713" />
-        <CategoryCard title="Sales" img={sale} background="#302713" />
-        <CategoryCard title="Kitchens" img={pic} background="#302713" />
+        {loading === false ? (
+          category.data ? (
+            category.data.slice(0, 5).map((items, index) => {
+              return <CategoryCard key={items.id} title={items.name} img={items.image} background={colors[index]} />;
+            })
+          ) : (
+            <h4>No Categories</h4>
+          )
+        ) : (
+          <div className="d-flex justify-content-center ">
+            <Spinner animation="border" variant="primary" />
+          </div>
+        )}
       </Row>
     </Container>
   );

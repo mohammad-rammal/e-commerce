@@ -7,7 +7,7 @@ export const getAllCategory = () => async (dispatch) => {
 
     dispatch({
       type: GET_ALL_CATEGORY,
-      payload: res.data,
+      payload: res,
     });
   } catch (err) {
     dispatch({

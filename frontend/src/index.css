@@ -102,11 +102,12 @@ body {
 }
 
 .category-card-img {
-  max-width: 110px;
+  max-width: 80px;
   max-height: 100px;
   position: absolute;
-  top: 24%;
-  left: 3%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .category-card-text {
