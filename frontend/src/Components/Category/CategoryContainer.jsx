@@ -1,20 +1,7 @@
 import {Container, Row, Spinner} from 'react-bootstrap';
 import CategoryCard from './CategoryCard';
-import {useEffect} from 'react';
-import {useSelector, useDispatch} from 'react-redux';
-import {getAllCategory} from '../../redux/actions/categoryAction';
 
-const CategoryContainer = () => {
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(getAllCategory());
-  }, [dispatch]);
-
-  const category = useSelector((state) => state.allCategory.category);
-
-  const loading = useSelector((state) => state.allCategory.loading);
-
+const CategoryContainer = ({data, loading}) => {
   const colors = ['#d6eb77', '#9679ed', '#e2c08d', '#6ca9d2', '#c7a9e9', '#89f1af'];
 
   return (
@@ -22,11 +9,11 @@ const CategoryContainer = () => {
       <div className="admin-content-text mt-2">All Categories </div>
       <Row className="my-2 d-flex justify-content-start">
         {loading === false ? (
-          category.data ? (
-            category.data.map((items) => {
+          data ? (
+            data.map((items, index) => {
               return (
                 <CategoryCard
-                  key={items.id}
+                  key={items.id || index}
                   title={items.name}
                   img={items.image}
                   background={colors[Math.floor(Math.random() * 5) + 1]}

@@ -722,3 +722,10 @@ body {
 }
 
 /* end filter */
+
+/* Upload photo */
+#upload-photo {
+  opacity: 0;
+  z-index: -1;
+  position: absolute;
+}

@@ -81,12 +81,6 @@ exports.getAll = (ModelName, nameOfModel = '') =>
         const {mongooseQuery, paginationResult} = apiFeatures;
         const documents = await mongooseQuery;
 
-        // const page = req.query.page * 1 || 1;
-        // const limit = req.query.limit * 1 || 5;
-        // const skip = (page - 1) * limit;
-
-        // const documents = await BrandModel.find({}).skip(skip).limit(limit);
-
         res.status(200).json({
             result: documents.length,
             paginationResult,
