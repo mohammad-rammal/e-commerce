@@ -23,17 +23,14 @@ const router = express.Router();
 // for mergeParams use (Nested Route)
 router.use('/:categoryId/subCategories', subCategoriesRoute);
 
-router
-    .route('/')
-    .get(getCategories)
-    .post(
-        authService.protect,
-        authService.allowedTo('admin', 'manager'),
-        uploadCategoryImage,
-        resizeImage,
-        createCategoryValidator,
-        createCategory,
-    );
+router.route('/').get(getCategories).post(
+    // authService.protect,
+    // authService.allowedTo('admin', 'manager'),
+    uploadCategoryImage,
+    resizeImage,
+    createCategoryValidator,
+    createCategory,
+);
 
 router
     .route('/:id')
