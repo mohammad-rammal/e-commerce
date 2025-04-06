@@ -13,7 +13,7 @@ const HomeCategory = () => {
         {loading === false ? (
           category.data ? (
             category.data.slice(0, 5).map((items, index) => {
-              return <CategoryCard key={items.id} title={items.name} img={items.image} background={colors[index]} />;
+              return <CategoryCard key={items._id} title={items.name} img={items.image} background={colors[index]} />;
             })
           ) : (
             <h4>No Categories</h4>
