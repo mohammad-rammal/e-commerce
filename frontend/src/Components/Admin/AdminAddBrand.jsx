@@ -47,7 +47,6 @@ const AdminAddBrand = () => {
           </button>
         </Col>
       </Row>
-      <ToastContainer />
     </div>
   );
 };
