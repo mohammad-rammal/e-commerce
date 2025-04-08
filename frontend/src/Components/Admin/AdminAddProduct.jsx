@@ -1,12 +1,14 @@
 import {Col, Row} from 'react-bootstrap';
 import add from '../../assets/images/add.png';
 import Multiselect from 'multiselect-react-dropdown';
-import MultiImageInput from 'react-multiple-image-input';
+// import MultiImageInput from 'react-multiple-image-input';
 import {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {getAllCategory} from '../../redux/actions/categoryAction';
 import checkNetStatus from '../../hook/useCheckNetStatus';
 import {getAllBrand} from '../../redux/actions/brandAction';
+import {CompactPicker} from 'react-color';
+import ImageUploading from 'react-images-uploading';
 
 const AdminAddProduct = () => {
   const dispatch = useDispatch();
@@ -23,9 +25,6 @@ const AdminAddProduct = () => {
   // get all brands state from redux
   const brand = useSelector((state) => state.allBrand.brand);
 
-  // values images for products
-  const [images, setImages] = useState([]);
-
   // value states
   const [productName, setProductName] = useState('');
   const [productDescription, setProductDescription] = useState('');
@@ -36,6 +35,20 @@ const AdminAddProduct = () => {
   const [brandID, setBrandID] = useState('');
   const [subCategoryID, setSubCategoryID] = useState([]);
   const [selectedSubCategoryID, setSelectedSubCategoryID] = useState([]);
+  const [showColor, setShowColor] = useState(false);
+  const [colors, setColors] = useState([]);
+
+  //
+  // values images for products
+  const [images, setImages] = useState([]);
+  const maxNumber = 5;
+
+  const onChange = (imageList) => {
+    setImages(imageList);
+  };
+  console.log(images);
+
+  //
 
   // when select category to store id
   const onSelectCategory = (e) => {
@@ -45,6 +58,18 @@ const AdminAddProduct = () => {
   // when select brand to store id
   const onSelectBrand = (e) => {
     setBrandID(e.target.value);
+  };
+
+  // choose colors
+  const handleChangeComplete = (color) => {
+    setColors([...colors, color.hex]);
+    setShowColor(!showColor);
+  };
+
+  // remove color from array
+  const removeColor = (color) => {
+    const newColor = colors.filter((e) => e !== color);
+    setColors(newColor);
   };
 
   const onSelect = () => {};
@@ -64,7 +89,55 @@ const AdminAddProduct = () => {
           <div className="text-form pb-2"> Product images</div>
 
           {/* multi images */}
-          <MultiImageInput
+          <ImageUploading
+            multiple
+            value={images}
+            onChange={onChange}
+            maxNumber={maxNumber}
+            dataURLKey="data_url">
+            {({
+              imageList,
+              onImageUpload,
+              onImageRemoveAll,
+              onImageUpdate,
+              onImageRemove,
+              isDragging,
+              dragProps,
+            }) => (
+              <div className="upload__image-wrapper">
+                <div className="upload-header">
+                  <button
+                    style={isDragging ? {color: 'white', backgroundColor: '#f44336'} : null}
+                    onClick={onImageUpload}
+                    {...dragProps}
+                    className="btn-upload">
+                    {isDragging ? 'Drop here' : 'Click or Drag to Upload'}
+                  </button>
+                  <button onClick={onImageRemoveAll} className="btn-remove-all">
+                    Remove All
+                  </button>
+                </div>
+
+                <div className="image-preview-container">
+                  {imageList.map((image, index) => (
+                    <div key={index} className="image-item">
+                      <img src={image['data_url']} alt="" className="image-thumbnail" />
+                      <div className="image-item__btn-wrapper">
+                        <button onClick={() => onImageUpdate(index)} className="btn-update">
+                          <i className="fa fa-refresh"></i> Update
+                        </button>
+                        <button onClick={() => onImageRemove(index)} className="btn-remove">
+                          <i className="fa fa-trash"></i> Remove
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </ImageUploading>
+
+          {/* <MultiImageInput
             images={images}
             setImages={setImages}
             cropConfig={{
@@ -80,7 +153,7 @@ const AdminAddProduct = () => {
             }}
             max={5}
             allowCrop={false}
-          />
+          /> */}
 
           <input
             value={productName}
@@ -164,10 +237,26 @@ const AdminAddProduct = () => {
 
           <div className="text-form mt-3 ">Available Colors for the Product</div>
           <div className="mt-1 d-flex">
-            <div className="color ms-2 border mt-1" style={{backgroundColor: '#E52C2C'}}></div>
-            <div className="color ms-2 border mt-1 " style={{backgroundColor: 'white'}}></div>
-            <div className="color ms-2 border mt-1" style={{backgroundColor: 'black'}}></div>
-            <img src={add} alt="" width="30px" height="35px" className="" />
+            {colors.length >= 1
+              ? colors.map((color, index) => {
+                  return (
+                    <div
+                      onClick={() => removeColor(color)}
+                      key={index}
+                      className="color ms-2 border mt-1"
+                      style={{backgroundColor: color}}></div>
+                  );
+                })
+              : null}
+            <img
+              onClick={() => setShowColor(!showColor)}
+              src={add}
+              alt=""
+              width="30px"
+              height="35px"
+              style={{cursor: 'pointer'}}
+            />
+            {showColor === true ? <CompactPicker onChangeComplete={handleChangeComplete} /> : null}
           </div>
         </Col>
       </Row>
