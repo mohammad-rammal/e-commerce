@@ -8,18 +8,26 @@ exports.setCategoryIdToBody = (req, res, next) => {
     }
     next();
 };
-
 exports.createFilterObject = (req, res, next) => {
     // Nested Route (get)
-    let filterObject = {};
     if (req.params.categoryId) {
-        filterObject = {
+        req.filterObject = {
             category: req.params.categoryId,
         };
     }
-    req.filterObj = filterObject;
     next();
 };
+
+// exports.createFilterObject = (req, res, next) => {
+//     let filterObject = {};
+//     if (req.params.categoryId) {
+//         filterObject = {
+//             category: req.params.categoryId,
+//         };
+//     }
+//     req.filterObj = filterObject;
+//     next();
+// };
 
 /****************************************
  * @desc     Get list of subCategories

@@ -9,6 +9,7 @@ import checkNetStatus from '../../hook/useCheckNetStatus';
 import {getAllBrand} from '../../redux/actions/brandAction';
 import {CompactPicker} from 'react-color';
 import ImageUploading from 'react-images-uploading';
+import {getSubCategory} from '../../redux/actions/subCategoryAction';
 
 const AdminAddProduct = () => {
   const dispatch = useDispatch();
@@ -25,6 +26,8 @@ const AdminAddProduct = () => {
   // get all brands state from redux
   const brand = useSelector((state) => state.allBrand.brand);
 
+  const subCategory = useSelector((state) => state.subCategory.subcategory);
+
   // value states
   const [productName, setProductName] = useState('');
   const [productDescription, setProductDescription] = useState('');
@@ -37,6 +40,7 @@ const AdminAddProduct = () => {
   const [selectedSubCategoryID, setSelectedSubCategoryID] = useState([]);
   const [showColor, setShowColor] = useState(false);
   const [colors, setColors] = useState([]);
+  const [options, setOptions] = useState([]);
 
   //
   // values images for products
@@ -46,14 +50,25 @@ const AdminAddProduct = () => {
   const onChange = (imageList) => {
     setImages(imageList);
   };
-  console.log(images);
 
   //
 
   // when select category to store id
-  const onSelectCategory = (e) => {
+  const onSelectCategory = async (e) => {
+    if (e.target.value != 0) {
+      await dispatch(getSubCategory(e.target.value));
+    }
     setCategoryID(e.target.value);
   };
+  useEffect(() => {
+    if (categoryID != 0) {
+      if (subCategory.data) {
+        setOptions(subCategory.data);
+      }
+    } else {
+      setOptions([]);
+    }
+  }, [categoryID, subCategory.data]);
 
   // when select brand to store id
   const onSelectBrand = (e) => {
@@ -72,14 +87,13 @@ const AdminAddProduct = () => {
     setColors(newColor);
   };
 
-  const onSelect = () => {};
-  const onRemove = () => {};
+  const onSelect = (selectedList) => {
+    setSelectedSubCategoryID(selectedList);
+  };
 
-  const options = [
-    {name: 'First Classification', id: 1},
-    {name: 'Second Classification', id: 2},
-    {name: 'Third Classification', id: 3},
-  ];
+  const onRemove = (selectedList) => {
+    setSelectedSubCategoryID(selectedList);
+  };
 
   return (
     <div>
@@ -243,7 +257,7 @@ const AdminAddProduct = () => {
                     <div
                       onClick={() => removeColor(color)}
                       key={index}
-                      className="color ms-2 border mt-1"
+                      className="color me-1 border mt-1"
                       style={{backgroundColor: color}}></div>
                   );
                 })
