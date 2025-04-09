@@ -64,7 +64,7 @@ app.use(xss());
 // - Brute-force protection (Security)
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 1000,
+    max: 10000,
     message: 'Too many requests, please try again after an hour.',
 });
 // - Apply rate limiting for all routes starting with /api

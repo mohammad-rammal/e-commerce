@@ -10,6 +10,8 @@ import {getAllBrand} from '../../redux/actions/brandAction';
 import {CompactPicker} from 'react-color';
 import ImageUploading from 'react-images-uploading';
 import {getSubCategory} from '../../redux/actions/subCategoryAction';
+import {createProduct} from '../../redux/actions/productAction';
+import notify from '../../hook/useNotification';
 
 const AdminAddProduct = () => {
   const dispatch = useDispatch();
@@ -41,6 +43,7 @@ const AdminAddProduct = () => {
   const [showColor, setShowColor] = useState(false);
   const [colors, setColors] = useState([]);
   const [options, setOptions] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   //
   // values images for products
@@ -94,6 +97,93 @@ const AdminAddProduct = () => {
   const onRemove = (selectedList) => {
     setSelectedSubCategoryID(selectedList);
   };
+
+  // convert base64 to file
+  function dataURLtoFile(dataurl, filename) {
+    var arr = dataurl.split(','),
+      mime = arr[0].match(/:(.*?);/)[1],
+      bstr = atob(arr[arr.length - 1]),
+      n = bstr.length,
+      u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, {type: mime});
+  }
+
+  // save data
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (
+      categoryID === 0 ||
+      productName === '' ||
+      productDescription === '' ||
+      images <= 0 ||
+      priceBefore <= 0
+    ) {
+      notify('Complete missing fields', 'warn');
+      return;
+    }
+
+    const imageCover = dataURLtoFile(images[0].data_url, Math.random() + '.png');
+
+    const itemImages = Array.from(Array(Object.keys(images).length).keys()).map((items, index) => {
+      return dataURLtoFile(images[index].data_url, Math.random() + '.png');
+    });
+
+    const formData = new FormData();
+    formData.append('title', productName);
+    formData.append('description', productDescription);
+    formData.append('quantity', quantity);
+    formData.append('price', priceBefore);
+    formData.append('imageCover', imageCover);
+    formData.append('category', categoryID);
+    formData.append('brand', brandID);
+
+    // .map just in formData
+    colors.map((color) => {
+      return formData.append('colors', color);
+    });
+
+    selectedSubCategoryID.map((items) => {
+      return formData.append('subCategories', items._id);
+    });
+
+    itemImages.map((items) => {
+      return formData.append('images', items);
+    });
+    setLoading(true);
+    await dispatch(createProduct(formData));
+    setLoading(false);
+  };
+  // get create msg
+  const product = useSelector((state) => state.allProduct.product);
+
+  useEffect(() => {
+    if (loading === false) {
+      setCategoryID(0);
+      setColors([]);
+      setImages([]);
+      setProductName('');
+      setProductDescription('');
+      setPriceBefore('price before discount');
+      setPriceAfter('price after discount');
+      setQuantity('available quantity');
+      setBrandID(0);
+      setSelectedSubCategoryID([]);
+
+      setTimeout(() => setLoading(true), 1500);
+
+      if (product) {
+        if (product.status === 201) {
+          notify('Successfully added', 'success');
+        } else {
+          notify('Something wrong happen', 'error');
+        }
+      }
+    }
+  }, [loading, product]);
 
   return (
     <div>
@@ -276,7 +366,9 @@ const AdminAddProduct = () => {
       </Row>
       <Row>
         <Col sm="8" className="d-flex justify-content-end">
-          <button className="btn-save d-inline mt-2">Save product</button>
+          <button onClick={handleSubmit} className="btn-save d-inline mt-2">
+            Save product
+          </button>
         </Col>
       </Row>
     </div>

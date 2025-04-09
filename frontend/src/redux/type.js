@@ -7,4 +7,6 @@ export const CREATE_BRAND = 'CREATE_BRAND';
 export const CREATE_SUB_CATEGORY = 'CREATE_SUB_CATEGORY';
 export const GET_SUBCATEGORY = 'GET_SUBCATEGORY';
 
+export const CREATE_PRODUCT = 'CREATE_PRODUCT';
+
 export const GET_ERROR = 'GET_ERROR';
