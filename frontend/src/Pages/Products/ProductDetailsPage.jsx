@@ -3,13 +3,16 @@ import CategoryHeader from '../../Components/Category/CategoryHeader';
 import ProductDetails from '../../Components/Products/ProductDetails';
 import RateContainer from '../../Components/Rate/RateContainer';
 import CardProductsContainer from '../../Components/Products/CardProductsContainer';
+import {useParams} from 'react-router-dom';
 
 const ProductDetailsPage = () => {
+  const {id} = useParams();
+
   return (
     <div className="min-vh-100">
       <CategoryHeader />
       <Container>
-        <ProductDetails />
+        <ProductDetails id={id} />
         <RateContainer />
         <CardProductsContainer title="Products you may like" />
       </Container>

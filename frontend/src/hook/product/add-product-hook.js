@@ -140,7 +140,12 @@ const AddProductHook = () => {
       images <= 0 ||
       priceBefore <= 0
     ) {
-      notify('Complete missing fields', 'warn');
+      notify('Complete missing fields!', 'warn');
+      return;
+    }
+
+    if (priceAfter >= priceBefore) {
+      notify('The price must be less than before discount!', 'warn');
       return;
     }
 

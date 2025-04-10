@@ -4,19 +4,22 @@ import SearchCountResult from '../../Components/utilities/SearchCountResult';
 import SideFilter from '../../Components/utilities/SideFilter';
 import CardProductsContainer from '../../Components/Products/CardProductsContainer';
 import Pagination from '../../Components/utilities/Pagination';
+import ViewSearchProductHook from '../../hook/product/view-search-product-hook';
 
 const ShopProductsPage = () => {
+  const [items] = ViewSearchProductHook();
+
   return (
     <div className="min-vh-100">
       <CategoryHeader />
       <Container>
-        <SearchCountResult title="800 Search results" />
+        <SearchCountResult title={`${items.length} Search results`} />
         <Row className="d-flex flex-row">
           <Col xs="4" sm="4" md="3" lg="2" xl="2" className="d-flex">
             <SideFilter />
           </Col>
           <Col xs="8" sm="8" md="9" lg="10" xl="10">
-            <CardProductsContainer title="" btnTitle="" />
+            <CardProductsContainer products={items} title="" btnTitle="" />
           </Col>
         </Row>
         <Pagination />

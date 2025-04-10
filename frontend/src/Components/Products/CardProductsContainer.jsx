@@ -2,15 +2,16 @@ import {Container, Row} from 'react-bootstrap';
 import SubTitle from '../utilities/SubTitle';
 import ProductCard from './ProductCard';
 
-const CardProductsContainer = ({title, btnTitle, pathText}) => {
+const CardProductsContainer = ({title, btnTitle, pathText, products}) => {
   return (
     <Container>
-      <SubTitle title={title} btnTitle={btnTitle} pathText={pathText} />
+      {products ? <SubTitle title={title} btnTitle={btnTitle} pathText={pathText} /> : null}
       <Row className="my-2 d-flex justify-content-between">
-        <ProductCard />
-        <ProductCard />
-        <ProductCard />
-        <ProductCard />
+        {products
+          ? products.map((items, index) => {
+              return <ProductCard key={index} items={items} />;
+            })
+          : null}
       </Row>
     </Container>
   );

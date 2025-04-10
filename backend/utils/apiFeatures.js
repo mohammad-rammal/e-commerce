@@ -63,23 +63,27 @@ class ApiFeatures {
 
     pagination(countDocuments) {
         const page = this.queryString.page * 1 || 1;
-        const limit = this.queryString.limit * 1 || 6;
+
+        let limit;
+        if (!this.queryString.limit) {
+            // Default: show all
+            limit = countDocuments;
+        } else {
+            limit = this.queryString.limit * 1;
+        }
+
         const skip = (page - 1) * limit;
-        const endPageIndex = page * limit; // 2*10 = 20
+        const endPageIndex = page * limit;
 
         const pagination = {};
         pagination.currentPage = page;
         pagination.limit = limit;
-
-        // number of pages
         pagination.numberOfPages = Math.ceil(countDocuments / limit);
 
-        // next page
         if (endPageIndex < countDocuments) {
             pagination.next = page + 1;
         }
 
-        // previous page
         if (skip > 0) {
             pagination.previous = page - 1;
         }
@@ -89,6 +93,35 @@ class ApiFeatures {
 
         return this;
     }
+
+    // pagination(countDocuments) {
+    //     const page = this.queryString.page * 1 || 1;
+    //     const limit = this.queryString.limit * 1 || 6;
+    //     const skip = (page - 1) * limit;
+    //     const endPageIndex = page * limit; // 2*10 = 20
+
+    //     const pagination = {};
+    //     pagination.currentPage = page;
+    //     pagination.limit = limit;
+
+    //     // number of pages
+    //     pagination.numberOfPages = Math.ceil(countDocuments / limit);
+
+    //     // next page
+    //     if (endPageIndex < countDocuments) {
+    //         pagination.next = page + 1;
+    //     }
+
+    //     // previous page
+    //     if (skip > 0) {
+    //         pagination.previous = page - 1;
+    //     }
+
+    //     this.mongooseQuery = this.mongooseQuery.skip(skip).limit(limit);
+    //     this.paginationResult = pagination;
+
+    //     return this;
+    // }
 }
 
 module.exports = ApiFeatures;

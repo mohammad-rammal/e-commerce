@@ -1,6 +1,6 @@
 import {Col, Row} from 'react-bootstrap';
 
-const ProductDescription = () => {
+const ProductDescription = ({id}) => {
   return (
     <div>
       <Row className="mt-2">
@@ -9,7 +9,8 @@ const ProductDescription = () => {
       <Row>
         <Col md="8">
           <div className="cat-title d-inline">
-            iPhone XR 128GB 4G LTE with FaceTime Product Red <div className="cat-rate d-inline mx-3">4.5</div>
+            iPhone XR 128GB 4G LTE with FaceTime Product Red{' '}
+            <div className="cat-rate d-inline mx-3">4.5</div>
           </div>
         </Col>
       </Row>
@@ -33,12 +34,13 @@ const ProductDescription = () => {
       <Row className="mt-2">
         <Col md="10">
           <div className="product-description d-inline">
-            Features dual SIM: a physical card and an e-SIM. You can easily unlock your iPhone and log in to apps,
-            accounts, and more. Face ID is faster and more secure. For authentication via fingerprint Face ID features
-            the A12 Bionic chip, the smartest and most powerful chip in a smartphone. The world's most popular cameras
-            have ushered in a new era of photography. The innovative ISP sensor and neural engine enable you to capture
-            unprecedented images. A single-lens camera brings foreground subjects into sharp focus, contrasting with a
-            blurred background. Overview
+            Features dual SIM: a physical card and an e-SIM. You can easily unlock your iPhone and
+            log in to apps, accounts, and more. Face ID is faster and more secure. For
+            authentication via fingerprint Face ID features the A12 Bionic chip, the smartest and
+            most powerful chip in a smartphone. The world's most popular cameras have ushered in a
+            new era of photography. The innovative ISP sensor and neural engine enable you to
+            capture unprecedented images. A single-lens camera brings foreground subjects into sharp
+            focus, contrasting with a blurred background. Overview
           </div>
         </Col>
       </Row>
