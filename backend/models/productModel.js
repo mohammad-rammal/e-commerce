@@ -92,14 +92,14 @@ productSchema.virtual('reviews', {
     localField: '_id',
 });
 
-// mongoose query middleware
-productSchema.pre(/^find/, function (next) {
-    this.populate({
-        path: 'category',
-        select: 'name -_id',
-    });
-    next();
-});
+//* mongoose query middleware (show name of category instead of id)
+// productSchema.pre(/^find/, function (next) {
+//     this.populate({
+//         path: 'category',
+//         select: 'name -_id',
+//     });
+//     next();
+// });
 
 // return image base url + image name
 const setImageURL = (doc) => {
