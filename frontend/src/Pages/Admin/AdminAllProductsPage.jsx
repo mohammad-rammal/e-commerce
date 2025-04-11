@@ -16,11 +16,7 @@ const AdminAllProductsPage = () => {
         <Col sm="9" xs="9" md="10">
           <AdminAllProducts products={items} />
           {pageCount > 1 ? (
-            <Pagination
-              pageCount={pageCount}
-              currentPage={currentPage} // Pass currentPage for highlighting the current page
-              onPress={onPress}
-            />
+            <Pagination pageCount={pageCount} currentPage={currentPage} onPress={onPress} />
           ) : null}
         </Col>
       </Row>

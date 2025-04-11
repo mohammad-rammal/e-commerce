@@ -43,6 +43,10 @@ router
         updateProductValidator,
         updateProduct,
     )
-    .delete(authService.protect, authService.allowedTo('admin'), deleteProductValidator, deleteProduct);
+    .delete(
+        // authService.protect, authService.allowedTo('admin'),
+        deleteProductValidator,
+        deleteProduct,
+    );
 
 module.exports = router;
