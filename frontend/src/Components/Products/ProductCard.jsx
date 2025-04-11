@@ -33,7 +33,10 @@ const ProductCard = ({items}) => {
         </div>
         <Card.Body>
           <Card.Title>
-            <div className="card-title">{items.title}</div>
+            <div className="card-title">
+              {' '}
+              {items.title.length > 15 ? items.title.slice(0, 15) + '...' : items.title}
+            </div>
           </Card.Title>
           <div className="d-flex justify-content-between align-items-center">
             <div className="d-flex">

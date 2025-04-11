@@ -1,7 +1,9 @@
+import useDeleteData from '../../hooks/useDeleteData';
 import useGetData from '../../hooks/useGetData';
 import {useInsertDataWithImage} from '../../hooks/useInsertData';
 import {
   CREATE_PRODUCT,
+  DELETE_PRODUCT,
   GET_ALL_PRODUCTS,
   GET_ERROR,
   GET_ONE_PRODUCT,
@@ -42,6 +44,23 @@ export const getAllProducts = (limit) => async (dispatch) => {
     });
   }
 };
+// Get all products with pages number
+export const getAllProductsPage = (limit, page) => async (dispatch) => {
+  try {
+    const res = await useGetData(`/api/v1/products?limit=${limit}&page=${page}`);
+
+    dispatch({
+      type: GET_ALL_PRODUCTS,
+      payload: res,
+      loading: true, // start req
+    });
+  } catch (err) {
+    dispatch({
+      type: GET_ERROR,
+      payload: 'Error ' + err,
+    });
+  }
+};
 
 // Get one product with id
 export const getOneProduct = (id) => async (dispatch) => {
@@ -68,6 +87,24 @@ export const getProductLike = (id) => async (dispatch) => {
 
     dispatch({
       type: GET_PRODUCT_LIKE,
+      payload: res,
+      loading: true, // start req
+    });
+  } catch (err) {
+    dispatch({
+      type: GET_ERROR,
+      payload: 'Error ' + err,
+    });
+  }
+};
+
+// Delete product with id
+export const deleteProduct = (id) => async (dispatch) => {
+  try {
+    const res = await useDeleteData(`/api/v1/products/${id}`);
+
+    dispatch({
+      type: DELETE_PRODUCT,
       payload: res,
       loading: true, // start req
     });

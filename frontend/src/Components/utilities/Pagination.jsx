@@ -1,6 +1,11 @@
 import ReactPaginate from 'react-paginate';
+import {useSearchParams} from 'react-router-dom';
 
 const Pagination = ({pageCount, onPress}) => {
+  const [searchParams] = useSearchParams();
+
+  const currentPage = parseInt(searchParams.get('page')) || 1;
+
   const handlePageClick = (data) => {
     onPress(data.selected + 1);
   };
@@ -24,7 +29,9 @@ const Pagination = ({pageCount, onPress}) => {
       breakClassName={'page-item'}
       breakLinkClassName={'page-link'}
       activeClassName={'active'}
+      forcePage={currentPage - 1} // Set the active page based on currentPage
     />
   );
 };
+
 export default Pagination;

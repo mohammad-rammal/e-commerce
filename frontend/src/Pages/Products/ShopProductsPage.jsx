@@ -7,7 +7,7 @@ import Pagination from '../../Components/utilities/Pagination';
 import ViewSearchProductHook from '../../hook/product/view-search-product-hook';
 
 const ShopProductsPage = () => {
-  const [items] = ViewSearchProductHook();
+  const [items, pageCount, onPress] = ViewSearchProductHook();
 
   return (
     <div className="min-vh-100">
@@ -22,7 +22,7 @@ const ShopProductsPage = () => {
             <CardProductsContainer products={items} title="" btnTitle="" />
           </Col>
         </Row>
-        <Pagination />
+        {pageCount > 1 ? <Pagination pageCount={pageCount} onPress={onPress} /> : null}
       </Container>
     </div>
   );
