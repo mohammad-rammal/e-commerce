@@ -103,15 +103,16 @@ productSchema.virtual('reviews', {
 
 // return image base url + image name
 const setImageURL = (doc) => {
-    if (doc.imageCover) {
+    if (doc.imageCover && !doc.imageCover.includes('http')) {
         const imageUrl = `${process.env.BASE_URL}/products/${doc.imageCover}`;
         doc.imageCover = imageUrl;
     }
-    if (doc.images) {
-        const imagesList = [];
-        doc.images.forEach((image) => {
-            const imageUrl = `${process.env.BASE_URL}/products/${image}`;
-            imagesList.push(imageUrl);
+    if (doc.images && Array.isArray(doc.images)) {
+        const imagesList = doc.images.map((image) => {
+            if (!image.includes('http')) {
+                return `${process.env.BASE_URL}/products/${image}`;
+            }
+            return image;
         });
         doc.images = imagesList;
     }

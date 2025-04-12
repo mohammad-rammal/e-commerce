@@ -6,7 +6,7 @@ const useUpdateDataWithImage = async (url, params) => {
   };
 
   const res = await baseUrl.put(url, params, config);
-  console.log(res.status);
+  console.log(res);
 
   return res;
 };

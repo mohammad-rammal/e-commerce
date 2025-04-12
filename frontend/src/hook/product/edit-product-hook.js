@@ -62,6 +62,7 @@ const AdminEditProductHook = (id) => {
         const formattedImages = item.data.images.map((imgUrl) => ({
           data_url: imgUrl,
         }));
+
         setImages(formattedImages);
       }
     }
@@ -81,6 +82,7 @@ const AdminEditProductHook = (id) => {
 
   const onChange = (imageList) => {
     setImages(imageList);
+    console.log(imageList);
   };
 
   const onChangeProductName = (e) => {
@@ -155,31 +157,25 @@ const AdminEditProductHook = (id) => {
 
   // convert base64 to file
   function dataURLtoFile(dataurl, filename) {
-    const arr = dataurl.split(',');
-    const mimeMatch = arr[0].match(/:(.*?);/);
-    if (!mimeMatch) {
-      console.error('Invalid data URL:', dataurl);
-      return null; // Or throw an error or return a fallback File
-    }
-
-    const mime = mimeMatch[1];
-    const bstr = atob(arr[1]);
-    let n = bstr.length;
-    const u8arr = new Uint8Array(n);
+    var arr = dataurl.split(','),
+      mime = arr[0].match(/:(.*?);/)[1],
+      bstr = atob(arr[arr.length - 1]),
+      n = bstr.length,
+      u8arr = new Uint8Array(n);
     while (n--) {
       u8arr[n] = bstr.charCodeAt(n);
     }
     return new File([u8arr], filename, {type: mime});
   }
 
-  const convertURLtoFile = async (url) => {
-    const response = await fetch(url, {mode: 'cors'});
-    const data = await response.blob();
-    const ext = url.split('.').pop();
-    const filename = url.split('/').pop();
-    const metadata = {type: `image/${ext}`};
-    return new File([data], Math.random(), metadata);
-  };
+  // const convertURLtoFile = async (url) => {
+  //   const response = await fetch(url, {mode: 'cors'});
+  //   const data = await response.blob();
+  //   const ext = url.split('.').pop();
+  //   const filename = url.split('/').pop();
+  //   const metadata = {type: `image/${ext}`};
+  //   return new File([data], Math.random(), metadata);
+  // };
 
   // save data
   const handleSubmit = async (e) => {
@@ -204,32 +200,33 @@ const AdminEditProductHook = (id) => {
     }
 
     // image base = convert url to base 64 else {already base 64}
-    let imageCover;
-    if (images[0].length <= 1000) {
-      convertURLtoFile(images[0]).then((val) => (imageCover = val));
+    // let imageCover;
+    // if (images[0].length <= 1000) {
+    //   convertURLtoFile(images[0]).then((val) => (imageCover = val));
 
-      //log(val)
-    } else {
-      imageCover = dataURLtoFile(images[0].data_url, Math.random() + '.png');
-    }
+    //   //log(val)
+    // } else {
+    //   imageCover = dataURLtoFile(images[0].data_url, Math.random() + '.png');
+    // }
 
-    let itemImages = [];
-    Array.from(Array(Object.keys(images).length).keys()).map((items, index) => {
-      if (images[index].length <= 1000) {
-        convertURLtoFile(images[index]).then((val) => itemImages.push(val));
-      } else {
-        itemImages.push(dataURLtoFile(images[index].data_url, Math.random() + '.png'));
-      }
-    });
-
-    //!
-    // const imageCover = dataURLtoFile(images[0].data_url, Math.random() + '.png');
-
-    // const itemImages = Array.from(Array(Object.keys(images).length).keys()).map((items, index) => {
-    //   return dataURLtoFile(images[index].data_url, Math.random() + '.png');
+    // let itemImages = [];
+    // Array.from(Array(Object.keys(images).length).keys()).map((items, index) => {
+    //   if (images[index].length <= 1000) {
+    //     convertURLtoFile(images[index]).then((val) => itemImages.push(val));
+    //   } else {
+    //     itemImages.push(dataURLtoFile(images[index].data_url, Math.random() + '.png'));
+    //   }
     // });
-    //!
 
+    //!
+    const imageCover = dataURLtoFile(images[0].data_url, Math.random() + '.png');
+
+    const itemImages = Array.from(Array(Object.keys(images).length).keys()).map((items, index) => {
+      return dataURLtoFile(images[index].data_url, Math.random() + '.png');
+    });
+    //!
+    console.log(imageCover);
+    console.log(itemImages);
     const formData = new FormData();
     formData.append('title', productName);
     formData.append('description', productDescription);
@@ -258,9 +255,11 @@ const AdminEditProductHook = (id) => {
     setTimeout(async () => {
       setLoading(true);
       await dispatch(updateProduct(id, formData));
+
       setLoading(false);
     }, 1000);
   };
+
   // get create msg
   const product = useSelector((state) => state.allProduct.updateProduct);
 
@@ -280,7 +279,7 @@ const AdminEditProductHook = (id) => {
       setTimeout(() => setLoading(true), 1500);
 
       if (product) {
-        if (product.status === 201) {
+        if (product.status === 200) {
           notify('Successfully updated', 'success');
         } else {
           notify('Something wrong happen', 'error');

@@ -16,6 +16,8 @@ import {
 export const createProduct = (formData) => async (dispatch) => {
   try {
     const res = await useInsertDataWithImage(`/api/v1/products`, formData);
+    console.log(formData);
+
     dispatch({
       type: CREATE_PRODUCT,
       payload: res,
@@ -121,7 +123,10 @@ export const deleteProduct = (id) => async (dispatch) => {
 // Update product with id
 export const updateProduct = (id, Data) => async (dispatch) => {
   try {
+    console.log(Data);
+
     const res = await useUpdateDataWithImage(`/api/v1/products/${id}`, Data);
+    console.log(res);
 
     dispatch({
       type: UPDATE_PRODUCT,

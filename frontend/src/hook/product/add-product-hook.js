@@ -176,8 +176,10 @@ const AddProductHook = () => {
     itemImages.map((items) => {
       return formData.append('images', items);
     });
+
     setLoading(true);
     await dispatch(createProduct(formData));
+
     setLoading(false);
   };
   // get create msg
