@@ -54,7 +54,9 @@ const AdminAllProductsCard = ({items}) => {
             <div onClick={handleShow} className="d-inline item-delete-edit">
               Remove
             </div>
-            <div className="d-inline item-delete-edit">Edit</div>
+            <Link to={`/admin/editproduct/${items._id}`} style={{textDecoration: 'none'}}>
+              <div className="d-inline item-delete-edit">Edit</div>
+            </Link>
           </Col>
         </Row>
         <Link to={`/product/${items._id}`} style={{textDecoration: 'none'}}>

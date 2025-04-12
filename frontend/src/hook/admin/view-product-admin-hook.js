@@ -13,16 +13,21 @@ const ViewProductAdminHook = () => {
     dispatch(getAllProductsPage(9, pageFromURL));
   }, [dispatch, pageFromURL]);
 
-  const allProducts = useSelector((state) => state.allProduct.allProducts);
-
   let items = [];
-  if (allProducts.data) {
-    items = allProducts.data;
-  }
-
   let pagination = [];
-  if (allProducts.paginationResult) {
-    pagination = allProducts.paginationResult.numberOfPages;
+  try {
+    const allProducts = useSelector((state) => state.allProduct.allProducts);
+
+    if (allProducts.data) {
+      items = allProducts.data;
+    }
+
+    if (allProducts.paginationResult) {
+      pagination = allProducts.paginationResult.numberOfPages;
+    }
+    // eslint-disable-next-line no-unused-vars
+  } catch (error) {
+    /* empty */
   }
 
   const pageCount = pagination || 0;

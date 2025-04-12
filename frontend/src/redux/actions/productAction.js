@@ -1,6 +1,7 @@
 import useDeleteData from '../../hooks/useDeleteData';
 import useGetData from '../../hooks/useGetData';
 import {useInsertDataWithImage} from '../../hooks/useInsertData';
+import {useUpdateDataWithImage} from '../../hooks/useUpdateData';
 import {
   CREATE_PRODUCT,
   DELETE_PRODUCT,
@@ -8,6 +9,7 @@ import {
   GET_ERROR,
   GET_ONE_PRODUCT,
   GET_PRODUCT_LIKE,
+  UPDATE_PRODUCT,
 } from '../type';
 
 // Create product
@@ -105,6 +107,24 @@ export const deleteProduct = (id) => async (dispatch) => {
 
     dispatch({
       type: DELETE_PRODUCT,
+      payload: res,
+      loading: true, // start req
+    });
+  } catch (err) {
+    dispatch({
+      type: GET_ERROR,
+      payload: 'Error ' + err,
+    });
+  }
+};
+
+// Update product with id
+export const updateProduct = (id, Data) => async (dispatch) => {
+  try {
+    const res = await useUpdateDataWithImage(`/api/v1/products/${id}`, Data);
+
+    dispatch({
+      type: UPDATE_PRODUCT,
       payload: res,
       loading: true, // start req
     });
