@@ -9,6 +9,7 @@ import {
   GET_ERROR,
   GET_ONE_PRODUCT,
   GET_PRODUCT_LIKE,
+  GET_RESULTS_PRODUCTS,
   UPDATE_PRODUCT,
 } from '../type';
 
@@ -48,10 +49,47 @@ export const getAllProducts = (limit) => async (dispatch) => {
     });
   }
 };
+
+// Get number of result products
+export const getResultProducts = (queryString) => async (dispatch) => {
+  try {
+    const res = await useGetData(`/api/v1/products?${queryString}`);
+
+    dispatch({
+      type: GET_RESULTS_PRODUCTS,
+      payload: res,
+      loading: true, // start req
+    });
+  } catch (err) {
+    dispatch({
+      type: GET_ERROR,
+      payload: 'Error ' + err,
+    });
+  }
+};
+
 // Get all products with pages number
 export const getAllProductsPage = (limit, page) => async (dispatch) => {
   try {
     const res = await useGetData(`/api/v1/products?limit=${limit}&page=${page}`);
+
+    dispatch({
+      type: GET_ALL_PRODUCTS,
+      payload: res,
+      loading: true, // start req
+    });
+  } catch (err) {
+    dispatch({
+      type: GET_ERROR,
+      payload: 'Error ' + err,
+    });
+  }
+};
+
+// Get all products with query string
+export const getAllProductsSearch = (queryString) => async (dispatch) => {
+  try {
+    const res = await useGetData(`/api/v1/products?${queryString}`);
 
     dispatch({
       type: GET_ALL_PRODUCTS,

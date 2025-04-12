@@ -1,7 +1,7 @@
 import {Card, Col} from 'react-bootstrap';
 
 import favOff from '../../assets/images/fav-off.png';
-import rate from '../../assets/images/fav-on.png';
+import rate from '../../assets/images/rate.png';
 import {Link} from 'react-router-dom';
 
 const ProductCard = ({items}) => {

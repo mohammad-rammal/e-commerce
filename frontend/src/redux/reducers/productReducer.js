@@ -5,12 +5,14 @@ import {
   GET_ERROR,
   GET_ONE_PRODUCT,
   GET_PRODUCT_LIKE,
+  GET_RESULTS_PRODUCTS,
   UPDATE_PRODUCT,
 } from '../type';
 
 const initialState = {
   product: [],
   allProducts: [],
+  resultProducts: [],
   oneProduct: [],
   productLike: [],
   deleteProduct: [],
@@ -31,6 +33,13 @@ const productReducer = (state = initialState, action) => {
       return {
         ...state,
         allProducts: action.payload,
+        loading: false,
+      };
+
+    case GET_RESULTS_PRODUCTS:
+      return {
+        ...state,
+        resultProducts: action.payload,
         loading: false,
       };
 

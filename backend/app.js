@@ -24,6 +24,8 @@ dbConnection();
 // Express app
 const app = express();
 
+// app.use(express.urlencoded({extended: true}));
+
 // Enable other domains to access this app (API)
 app.use(cors());
 app.options('*', cors());
