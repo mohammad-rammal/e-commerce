@@ -18,7 +18,8 @@ const ViewSearchProductHook = () => {
     if (localStorage.getItem('searchWord') != null) {
       word = localStorage.getItem('searchWord');
     }
-    await dispatch(getAllProductsSearch(`limit=${limit}&keyword=${word}`));
+    sortData();
+    await dispatch(getAllProductsSearch(`sort=${sort}&limit=${limit}&keyword=${word}`));
     await dispatch(getResultProducts(`keyword=${word}`));
   }, [dispatch, limit]);
 
@@ -62,7 +63,33 @@ const ViewSearchProductHook = () => {
     if (localStorage.getItem('searchWord') != null) {
       word = localStorage.getItem('searchWord');
     }
-    await dispatch(getAllProductsSearch(`limit=${limit}&page=${page}&keyword=${word}`));
+
+    sortData();
+    await dispatch(
+      getAllProductsSearch(`sort=${sort}&limit=${limit}&page=${page}&keyword=${word}`)
+    );
+  };
+
+  let sortType = '';
+  let sort;
+  // sort data type
+  const sortData = () => {
+    if (localStorage.getItem('sortType') != null) {
+      sortType = localStorage.getItem('sortType');
+    } else {
+      sortType = '';
+    }
+    if (sortType === 'Price Low to High') {
+      sort = 'price';
+    } else if (sortType === 'Price High to Low') {
+      sort = '-price';
+    } else if (sortType === 'Top Rated') {
+      sort = 'ratingsQuantity';
+    } else if (sortType === 'Best Sellers') {
+      sort = 'sold';
+    } else {
+      sort = '';
+    }
   };
 
   return [items, pagination, onPress, getProducts, results];

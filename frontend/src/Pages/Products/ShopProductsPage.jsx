@@ -19,7 +19,7 @@ const ShopProductsPage = () => {
     <div className="min-vh-100">
       <CategoryHeader />
       <Container>
-        <SearchCountResult title={`${results} Search results`} />
+        <SearchCountResult onClick={getProducts} title={`${results} Search results`} />
         <Row className="d-flex flex-row">
           <Col xs="4" sm="4" md="3" lg="2" xl="2" className="d-flex">
             <SideFilter />

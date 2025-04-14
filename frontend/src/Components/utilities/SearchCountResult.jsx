@@ -2,11 +2,12 @@ import UnopDropdown from 'unop-react-dropdown';
 
 import sort from '../../assets/images/sort.png';
 
-const SearchCountResult = ({title}) => {
+const SearchCountResult = ({title, onClick}) => {
   const handler = () => {};
 
   const clickMe = (key) => {
     localStorage.setItem('sortType', key);
+    onClick();
   };
 
   return (
