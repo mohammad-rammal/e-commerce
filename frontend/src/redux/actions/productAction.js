@@ -91,10 +91,16 @@ export const getAllProductsSearch = (queryString) => async (dispatch) => {
   try {
     const res = await useGetData(`/api/v1/products?${queryString}`);
 
+    // Ensure the pagination result is returned correctly based on the query filters
+    const {data, paginationResult} = res;
+
     dispatch({
       type: GET_ALL_PRODUCTS,
-      payload: res,
-      loading: true, // start req
+      payload: {
+        data,
+        paginationResult,
+      },
+      loading: false,
     });
   } catch (err) {
     dispatch({

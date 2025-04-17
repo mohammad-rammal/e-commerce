@@ -3,7 +3,10 @@ import {Row} from 'react-bootstrap';
 import SidebarSearchHook from '../../hook/search/sidebar-search-hook';
 
 const SideFilter = () => {
-  const [category, brand, clickCategory, clickBrand] = SidebarSearchHook();
+  const [category, brand, clickCategory, clickBrand, priceFrom, priceTo] = SidebarSearchHook();
+
+  let localFrom = localStorage.getItem('priceFrom');
+  let localTo = localStorage.getItem('priceTo');
 
   const [showAllCategories, setShowAllCategories] = useState(false);
   const [showAllBrands, setShowAllBrands] = useState(false);
@@ -18,7 +21,7 @@ const SideFilter = () => {
         <div className="d-flex flex-column mt-2">
           <div className="filter-title">Category</div>
           <div className="d-flex mt-3">
-            <input type="checkbox" value="0" />
+            <input onChange={clickCategory} type="checkbox" value="0" />
             <div className="filter-sub ms-2">All</div>
           </div>
           {category &&
@@ -42,7 +45,7 @@ const SideFilter = () => {
         <div className="d-flex flex-column mt-2">
           <div className="filter-title mt-3">Brand</div>
           <div className="d-flex mt-3">
-            <input type="checkbox" value="0" />
+            <input onChange={clickBrand} type="checkbox" value="0" />
             <div className="filter-sub ms-2">All</div>
           </div>
           {brand &&
@@ -67,17 +70,21 @@ const SideFilter = () => {
         <div className="d-flex">
           <p className="filter-sub my-2">From:</p>
           <input
+            value={localFrom}
+            onChange={priceFrom}
             className="m-2 text-center"
             type="number"
-            style={{width: '50px', height: '25px'}}
+            style={{width: '70px', height: '25px'}}
           />
         </div>
         <div className="d-flex">
           <p className="filter-sub my-2 pe-3">To:</p>
           <input
+            value={localTo}
+            onChange={priceTo}
             className="m-2 text-center"
             type="number"
-            style={{width: '50px', height: '25px'}}
+            style={{width: '70px', height: '25px'}}
           />
         </div>
       </Row>

@@ -2,83 +2,57 @@
 /* eslint-disable no-unused-vars */
 import {useCallback, useEffect} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {
-  getAllProducts,
-  getAllProductsPage,
-  getAllProductsSearch,
-  getResultProducts,
-} from '../../redux/actions/productAction';
+import {getAllProductsSearch, getResultProducts} from '../../redux/actions/productAction';
 
 const ViewSearchProductHook = () => {
-  let limit = 8;
+  const limit = 8;
   const dispatch = useDispatch();
 
-  const getProducts = useCallback(async () => {
-    let word = '';
-    if (localStorage.getItem('searchWord') != null) {
-      word = localStorage.getItem('searchWord');
-    }
-    sortData();
-    await dispatch(getAllProductsSearch(`sort=${sort}&limit=${limit}&keyword=${word}`));
-    await dispatch(getResultProducts(`keyword=${word}`));
-  }, [dispatch, limit]);
+  // Declare these variables above useCallback to keep scope clean
+  let word = '';
+  let queryCategory = '';
+  let queryBrand = '';
+  let priceTo = '';
+  let priceFrom = '';
+  let priceFromString = '';
+  let priceToString = '';
+  let sortType = '';
+  let sort = '';
 
-  useEffect(() => {
-    getProducts();
-  }, [getProducts]);
-
-  const allProducts = useSelector((state) => state.allProduct.allProducts);
-  const resultProducts = useSelector((state) => state.allProduct.resultProducts);
-
-  let results = 0;
-  let items = [];
-  try {
-    if (allProducts.data) {
-      items = allProducts.data;
-    } else {
-      items = [];
-    }
-  } catch (error) {}
-
-  let pagination = [];
-  try {
-    if (allProducts.paginationResult) {
-      pagination = allProducts.paginationResult.numberOfPages;
-    } else {
-      pagination = [];
-    }
-  } catch (error) {}
-
-  try {
-    if (resultProducts.result) {
-      results = resultProducts.result;
-    } else {
-      results = 0;
-    }
-  } catch (error) {}
-
-  // page from pagination page for number of page
-  const onPress = async (page) => {
-    let word = '';
+  const getStorage = () => {
+    // Search keyword
     if (localStorage.getItem('searchWord') != null) {
       word = localStorage.getItem('searchWord');
     }
 
-    sortData();
-    await dispatch(
-      getAllProductsSearch(`sort=${sort}&limit=${limit}&page=${page}&keyword=${word}`)
-    );
+    // Category filter
+    if (localStorage.getItem('categoryChecked') != null) {
+      queryCategory = localStorage.getItem('categoryChecked');
+    }
+
+    // Brand filter
+    if (localStorage.getItem('brandChecked') != null) {
+      queryBrand = localStorage.getItem('brandChecked');
+    }
+
+    // Price range
+    if (localStorage.getItem('priceFrom') != null) {
+      priceFrom = localStorage.getItem('priceFrom');
+    }
+
+    if (localStorage.getItem('priceTo') != null) {
+      priceTo = localStorage.getItem('priceTo');
+    }
+
+    priceFromString = priceFrom && priceFrom > 0 ? `&price[gt]=${priceFrom}` : '';
+    priceToString = priceTo && priceTo > 0 ? `&price[lt]=${priceTo}` : '';
   };
 
-  let sortType = '';
-  let sort;
-  // sort data type
   const sortData = () => {
     if (localStorage.getItem('sortType') != null) {
       sortType = localStorage.getItem('sortType');
-    } else {
-      sortType = '';
     }
+
     if (sortType === 'Price Low to High') {
       sort = 'price';
     } else if (sortType === 'Price High to Low') {
@@ -92,6 +66,53 @@ const ViewSearchProductHook = () => {
     }
   };
 
+  const getProducts = useCallback(async () => {
+    getStorage();
+    sortData();
+
+    const fullQuery = `sort=${sort}&limit=${limit}&keyword=${word}&${queryCategory}&${queryBrand}${priceFromString}${priceToString}`;
+    await dispatch(getAllProductsSearch(fullQuery));
+    await dispatch(
+      getResultProducts(
+        `keyword=${word}&${queryCategory}&${queryBrand}${priceFromString}${priceToString}`
+      )
+    );
+  }, [dispatch]);
+
+  useEffect(() => {
+    getProducts();
+  }, [getProducts]);
+
+  const allProducts = useSelector((state) => state.allProduct.allProducts);
+  const resultProducts = useSelector((state) => state.allProduct.resultProducts);
+
+  let items = [];
+  let pagination = [];
+  let results = 0;
+
+  try {
+    console.log('All products', allProducts);
+
+    items = allProducts?.data || [];
+    console.log('items', items);
+
+    pagination = resultProducts?.result > 0 ? allProducts?.paginationResult?.numberOfPages || 0 : 0;
+
+    console.log('pagination', pagination);
+
+    results = resultProducts?.result || 0;
+  } catch (error) {}
+
+  // Pagination click
+  const onPress = async (page) => {
+    getStorage();
+    sortData();
+
+    const fullQuery = `sort=${sort}&limit=${limit}&page=${page}&keyword=${word}&${queryCategory}&${queryBrand}${priceFromString}${priceToString}`;
+    await dispatch(getAllProductsSearch(fullQuery));
+  };
+
   return [items, pagination, onPress, getProducts, results];
 };
+
 export default ViewSearchProductHook;

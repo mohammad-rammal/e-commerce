@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+
 class ApiFeatures {
     constructor(mongooseQuery, queryString) {
         this.mongooseQuery = mongooseQuery;
@@ -5,21 +7,40 @@ class ApiFeatures {
     }
 
     filter() {
-        const queryStringObj = {...this.queryString};
-        const excludesFields = ['page', 'sort', 'limit', 'fields', 'keyword'];
-        excludesFields.forEach((field) => delete queryStringObj[field]);
+        const queryObj = {...this.queryString};
 
-        // console.log(req.query);
-        // console.log(queryStringObj);
+        const excludeFields = ['page', 'sort', 'limit', 'fields', 'keyword'];
+        excludeFields.forEach((field) => delete queryObj[field]);
 
-        // Apply filtration
-        let queryStr = JSON.stringify(queryStringObj);
-        queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+        const queryStr = JSON.stringify(queryObj).replace(/\b(in|gte|gt|lte|lt|ne|regex)\b/g, (match) => `$${match}`);
 
-        this.mongooseQuery = this.mongooseQuery.find(JSON.parse(queryStr));
+        const parsedQuery = JSON.parse(queryStr);
 
+        // Cast category.$in to ObjectId
+        if (parsedQuery.category && parsedQuery.category.$in) {
+            parsedQuery.category.$in = parsedQuery.category.$in.map((id) => new mongoose.Types.ObjectId(id));
+        }
+
+        this.mongooseQuery = this.mongooseQuery.find(parsedQuery);
         return this;
     }
+
+    // filter() {
+    //     const queryStringObj = {...this.queryString};
+    //     const excludesFields = ['page', 'sort', 'limit', 'fields', 'keyword'];
+    //     excludesFields.forEach((field) => delete queryStringObj[field]);
+
+    //     // console.log(req.query);
+    //     // console.log(queryStringObj);
+
+    //     // Apply filtration
+    //     let queryStr = JSON.stringify(queryStringObj);
+    //     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+
+    //     this.mongooseQuery = this.mongooseQuery.find(JSON.parse(queryStr));
+
+    //     return this;
+    // }
 
     sort() {
         if (this.queryString.sort) {
