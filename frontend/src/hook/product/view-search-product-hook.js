@@ -96,11 +96,10 @@ const ViewSearchProductHook = () => {
     items = allProducts?.data || [];
     console.log('items', items);
 
-    pagination = resultProducts?.result > 0 ? allProducts?.paginationResult?.numberOfPages || 0 : 0;
-
+    pagination = allProducts?.paginationResult?.numberOfPages || [];
     console.log('pagination', pagination);
 
-    results = resultProducts?.result || 0;
+    results = resultProducts?.totalResults || 0;
   } catch (error) {}
 
   // Pagination click

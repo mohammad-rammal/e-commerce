@@ -69,20 +69,27 @@ exports.getAll = (ModelName, nameOfModel = '') =>
         if (req.filterObject) {
             filter = req.filterObject;
         }
-        // Build query
-        const documentsCounts = await ModelName.countDocuments();
-        const apiFeatures = new ApiFeatures(ModelName.find(filter), req.query)
-            .pagination(documentsCounts)
+
+        // Apply filter/search BEFORE pagination to count matched documents
+        let features = new ApiFeatures(ModelName.find(filter), req.query).filter().search(nameOfModel);
+
+        const filteredDocs = await features.mongooseQuery;
+        const totalResults = filteredDocs.length;
+
+        // Re-initialize query for pagination
+        features = new ApiFeatures(ModelName.find(filter), req.query)
             .filter()
             .search(nameOfModel)
+            .pagination(totalResults)
             .limit()
             .sort();
 
-        const {mongooseQuery, paginationResult} = apiFeatures;
+        const {mongooseQuery, paginationResult} = features;
         const documents = await mongooseQuery;
 
         res.status(200).json({
             result: documents.length,
+            totalResults, // Show total regardless of pagination
             paginationResult,
             data: documents,
         });
