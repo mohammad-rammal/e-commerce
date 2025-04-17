@@ -91,13 +91,9 @@ const ViewSearchProductHook = () => {
   let results = 0;
 
   try {
-    console.log('All products', allProducts);
-
     items = allProducts?.data || [];
-    console.log('items', items);
 
     pagination = allProducts?.paginationResult?.numberOfPages || [];
-    console.log('pagination', pagination);
 
     results = resultProducts?.totalResults || 0;
   } catch (error) {}

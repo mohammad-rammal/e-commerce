@@ -14,7 +14,6 @@ const ViewProductsHomeHook = () => {
   let items = [];
   if (allProducts.data) {
     items = allProducts.data.slice(0, 4);
-    console.log(items);
   } else {
     items = [];
   }
