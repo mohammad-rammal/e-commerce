@@ -177,17 +177,14 @@ const AdminEditProductHook = (id) => {
   //   return new File([data], Math.random(), metadata);
   // };
 
-  // save data
   const handleSubmit = async (e) => {
-    console.log('Handle');
-
     e.preventDefault();
 
     if (
       categoryID === 0 ||
       productName === '' ||
       productDescription === '' ||
-      images <= 0 ||
+      images.length === 0 ||
       priceBefore <= 0
     ) {
       notify('Complete missing fields!', 'warn');
@@ -199,34 +196,28 @@ const AdminEditProductHook = (id) => {
       return;
     }
 
-    // image base = convert url to base 64 else {already base 64}
-    // let imageCover;
-    // if (images[0].length <= 1000) {
-    //   convertURLtoFile(images[0]).then((val) => (imageCover = val));
+    let imageCover;
+    let itemImages = [];
 
-    //   //log(val)
-    // } else {
-    //   imageCover = dataURLtoFile(images[0].data_url, Math.random() + '.png');
-    // }
+    // Check if images are updated (base64) or old (URL)
+    if (images[0].data_url.startsWith('data:image')) {
+      // Images are base64 (newly added)
+      imageCover = dataURLtoFile(images[0].data_url, Math.random() + '.png');
+      itemImages = images.map((img) => dataURLtoFile(img.data_url, Math.random() + '.png'));
+    } else {
+      // Images are original URLs
+      const convertURLtoFile = async (url) => {
+        const response = await fetch(url);
+        const data = await response.blob();
+        const ext = url.split('.').pop();
+        const metadata = {type: `image/${ext}`};
+        return new File([data], Math.random().toString() + `.${ext}`, metadata);
+      };
 
-    // let itemImages = [];
-    // Array.from(Array(Object.keys(images).length).keys()).map((items, index) => {
-    //   if (images[index].length <= 1000) {
-    //     convertURLtoFile(images[index]).then((val) => itemImages.push(val));
-    //   } else {
-    //     itemImages.push(dataURLtoFile(images[index].data_url, Math.random() + '.png'));
-    //   }
-    // });
+      imageCover = await convertURLtoFile(images[0].data_url);
+      itemImages = await Promise.all(images.map((img) => convertURLtoFile(img.data_url)));
+    }
 
-    //!
-    const imageCover = dataURLtoFile(images[0].data_url, Math.random() + '.png');
-
-    const itemImages = Array.from(Array(Object.keys(images).length).keys()).map((items, index) => {
-      return dataURLtoFile(images[index].data_url, Math.random() + '.png');
-    });
-    //!
-    console.log(imageCover);
-    console.log(itemImages);
     const formData = new FormData();
     formData.append('title', productName);
     formData.append('description', productDescription);
@@ -235,30 +226,99 @@ const AdminEditProductHook = (id) => {
     formData.append('category', categoryID);
     formData.append('brand', brandID);
 
-    // .map just in formData
-    colors.map((color) => {
-      return formData.append('colors', color);
-    });
+    colors.forEach((color) => formData.append('colors', color));
+    selectedSubCategoryID.forEach((sub) => formData.append('subCategories', sub._id));
 
-    selectedSubCategoryID.map((items) => {
-      return formData.append('subCategories', items._id);
-    });
+    formData.append('imageCover', imageCover);
+    itemImages.forEach((img) => formData.append('images', img));
 
-    setTimeout(() => {
-      formData.append('imageCover', imageCover);
-
-      itemImages.map((items) => {
-        return formData.append('images', items);
-      });
-    }, 1000);
-
-    setTimeout(async () => {
-      setLoading(true);
-      await dispatch(updateProduct(id, formData));
-
-      setLoading(false);
-    }, 1000);
+    setLoading(true);
+    await dispatch(updateProduct(id, formData));
+    setLoading(false);
   };
+
+  // save data
+  // const handleSubmit = async (e) => {
+  //   console.log('Handle');
+
+  //   e.preventDefault();
+
+  //   if (
+  //     categoryID === 0 ||
+  //     productName === '' ||
+  //     productDescription === '' ||
+  //     images <= 0 ||
+  //     priceBefore <= 0
+  //   ) {
+  //     notify('Complete missing fields!', 'warn');
+  //     return;
+  //   }
+
+  //   if (priceAfter >= priceBefore) {
+  //     notify('The price must be less than before discount!', 'warn');
+  //     return;
+  //   }
+
+  //   // image base = convert url to base 64 else {already base 64}
+  //   // let imageCover;
+  //   // if (images[0].length <= 1000) {
+  //   //   convertURLtoFile(images[0]).then((val) => (imageCover = val));
+
+  //   //   //log(val)
+  //   // } else {
+  //   //   imageCover = dataURLtoFile(images[0].data_url, Math.random() + '.png');
+  //   // }
+
+  //   // let itemImages = [];
+  //   // Array.from(Array(Object.keys(images).length).keys()).map((items, index) => {
+  //   //   if (images[index].length <= 1000) {
+  //   //     convertURLtoFile(images[index]).then((val) => itemImages.push(val));
+  //   //   } else {
+  //   //     itemImages.push(dataURLtoFile(images[index].data_url, Math.random() + '.png'));
+  //   //   }
+  //   // });
+
+  //   //!
+  //   const imageCover = dataURLtoFile(images[0].data_url, Math.random() + '.png');
+
+  //   const itemImages = Array.from(Array(Object.keys(images).length).keys()).map((items, index) => {
+  //     return dataURLtoFile(images[index].data_url, Math.random() + '.png');
+  //   });
+  //   //!
+  //   console.log(imageCover);
+  //   console.log(itemImages);
+  //   const formData = new FormData();
+  //   formData.append('title', productName);
+  //   formData.append('description', productDescription);
+  //   formData.append('quantity', quantity);
+  //   formData.append('price', priceBefore);
+  //   formData.append('category', categoryID);
+  //   formData.append('brand', brandID);
+
+  //   // .map just in formData
+  //   colors.map((color) => {
+  //     return formData.append('colors', color);
+  //   });
+
+  //   selectedSubCategoryID.map((items) => {
+  //     return formData.append('subCategories', items._id);
+  //   });
+
+  //   setTimeout(() => {
+  //     formData.append('imageCover', imageCover);
+
+  //     itemImages.map((items) => {
+  //       return formData.append('images', items);
+  //     });
+  //   }, 1000);
+
+  //   setTimeout(async () => {
+  //     setLoading(true);
+  //     await dispatch(updateProduct(id, formData));
+
+  //     setLoading(false);
+  //   }, 1000);
+  // };
 
   // get create msg
   const product = useSelector((state) => state.allProduct.updateProduct);
