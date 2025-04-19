@@ -17,4 +17,6 @@ export const GET_PRODUCT_LIKE = 'GET_PRODUCT_LIKE';
 export const DELETE_PRODUCT = 'DELETE_PRODUCT';
 export const UPDATE_PRODUCT = 'UPDATE_PRODUCT';
 
+export const CREATE_NEW_USER = 'CREATE_NEW_USER';
+
 export const GET_ERROR = 'GET_ERROR';
