@@ -2,9 +2,11 @@ import {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import notify from '../useNotification';
 import {createNewUser} from '../../redux/actions/authAction';
+import {useNavigate} from 'react-router-dom';
 
 const RegisterHook = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -36,12 +38,15 @@ const RegisterHook = () => {
   const validationValues = () => {
     if (name === '' || email === '' || phone === '' || password === '' || confirmPassword === '') {
       notify('Missing fields', 'error');
+      return;
     }
     if (phone.length <= 5) {
       notify('Write valid phone number', 'error');
+      return;
     }
     if (password !== confirmPassword) {
       notify('Check the password not same confirm password', 'error');
+      return;
     }
   };
 
@@ -75,11 +80,15 @@ const RegisterHook = () => {
             notify('Email already exists!', 'error');
           }
         }
+
         if (res.errors && Array.isArray(res.errors)) {
           res.errors.forEach((err) => notify(err.msg, 'error'));
         } else if (res.data && res.data.token) {
           localStorage.setItem('token', res.data.token);
           notify('Registered successfully!', 'success');
+          setTimeout(() => {
+            navigate('/login');
+          }, 2000);
         }
       }
     }

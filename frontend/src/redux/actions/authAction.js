@@ -1,5 +1,5 @@
 import {useInsertData} from '../../hooks/useInsertData';
-import {CREATE_NEW_USER} from '../type';
+import {CREATE_NEW_USER, LOGIN_USER} from '../type';
 
 // create new user for register
 export const createNewUser = (Data) => async (dispatch) => {
@@ -14,6 +14,23 @@ export const createNewUser = (Data) => async (dispatch) => {
     dispatch({
       type: CREATE_NEW_USER,
       payload: err.data,
+    });
+  }
+};
+
+// login user
+export const loginUser = (Data) => async (dispatch) => {
+  try {
+    const res = await useInsertData(`/api/v1/auth/login`, Data);
+    dispatch({
+      type: LOGIN_USER,
+      payload: res,
+      loading: true,
+    });
+  } catch (err) {
+    dispatch({
+      type: LOGIN_USER,
+      payload: err,
     });
   }
 };
