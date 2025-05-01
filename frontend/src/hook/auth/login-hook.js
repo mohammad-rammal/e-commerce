@@ -42,16 +42,19 @@ const LoginHook = () => {
 
         if (res.data && res.data.token) {
           localStorage.setItem('token', res.data.token);
+          localStorage.setItem('user', JSON.stringify(res.data.data));
           notify('Successfully login', 'success');
           setTimeout(() => {
-            navigate('/');
+            window.location.href = '/';
           }, 2000);
         } else {
           localStorage.removeItem('token');
+          localStorage.removeItem('user');
         }
         if (res.data.message === 'Incorrect email or password') {
           notify('Incorrect email or password', 'error');
           localStorage.removeItem('token');
+          localStorage.removeItem('user');
         }
         setLoading(true);
       }
