@@ -3,7 +3,7 @@ import HomePage from './Pages/Home/HomePage';
 import NavBarLogin from './Components/utilities/NavBarLogin';
 import Footer from './Components/utilities/Footer';
 import LoginPage from './Pages/Auth/LoginPage';
-import Register from './Pages/Auth/Register';
+import Register from './Pages/Auth/RegisterPage';
 import AllCategoryPage from './Pages/Category/AllCategoryPage';
 import AllBrandPage from './Pages/Brand/AllBrandPage';
 import ShopProductsPage from './Pages/Products/ShopProductsPage';
@@ -24,6 +24,9 @@ import UserProfilePage from './Pages/User/UserProfilePage';
 import UserAddAddressPage from './Pages/User/UserAddAddressPage';
 import UserEditAddressPage from './Pages/User/UserEditAddressPage';
 import AdminEditProductPage from './Pages/Admin/AdminEditProductPage';
+import ForgetPasswordPage from './Pages/Auth/ForgetPasswordPage';
+import VerifyCode from './Pages/Auth/VerifyCodePage';
+import ResetPasswordPage from './Pages/Auth/ResetPasswordPage';
 
 function App() {
   return (
@@ -40,6 +43,7 @@ function App() {
           <Route path="/product/:id" element={<ProductDetailsPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/order/paymethod" element={<ChoosePayMethod />} />
+
           <Route path="/admin/allproducts" element={<AdminAllProductsPage />} />
           <Route path="/admin/allorders" element={<AdminAllOrdersPage />} />
           <Route path="/admin/orders/:id" element={<AdminOrderDetailsPage />} />
@@ -47,13 +51,17 @@ function App() {
           <Route path="/admin/addcategory" element={<AdminAddCategoryPage />} />
           <Route path="/admin/addsubcategory" element={<AdminAddSubCategoryPage />} />
           <Route path="/admin/addproduct" element={<AdminAddProductPage />} />
+          <Route path="/admin/editproduct/:id" element={<AdminEditProductPage />} />
+
           <Route path="/user/allorders" element={<UserAllOrdersPage />} />
           <Route path="/user/favoriteproducts" element={<UserFavoriteProductsPage />} />
           <Route path="/user/addresses" element={<UserAllAddressPage />} />
           <Route path="/user/add-address" element={<UserAddAddressPage />} />
           <Route path="/user/edit-address" element={<UserEditAddressPage />} />
           <Route path="/user/profile" element={<UserProfilePage />} />
-          <Route path="/admin/editproduct/:id" element={<AdminEditProductPage />} />
+          <Route path="/user/forget-password" element={<ForgetPasswordPage />} />
+          <Route path="/user/verify-code" element={<VerifyCode />} />
+          <Route path="/user/reset-password" element={<ResetPasswordPage />} />
         </Routes>
       </BrowserRouter>
       <Footer />

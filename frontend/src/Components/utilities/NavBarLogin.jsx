@@ -57,7 +57,11 @@ const NavBarLogin = () => {
           <Nav className="me-auto">
             {user != '' ? (
               <NavDropdown title={user.name} id="basic-nav-dropdown">
-                <NavDropdown.Item href="/user/profile">Profile</NavDropdown.Item>
+                {user.role === 'admin' ? (
+                  <NavDropdown.Item href="/admin/allproducts">Control Panel</NavDropdown.Item>
+                ) : (
+                  <NavDropdown.Item href="/user/profile">Profile</NavDropdown.Item>
+                )}
                 <NavDropdown.Divider />
                 <NavDropdown.Item onClick={logOut} href="#action/3.3">
                   Logout

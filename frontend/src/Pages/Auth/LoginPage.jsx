@@ -36,9 +36,18 @@ const LoginPage = () => {
             )}
           </button>
           <label className="mx-auto my-4">
-            Don't have an account?{' '}
+            Don't have an account?
             <Link to="/register" style={{textDecoration: 'none'}}>
-              <span style={{cursor: 'pointer'}} className="text-danger">
+              <span style={{cursor: 'pointer'}} className="text-danger mx-1">
+                Click here
+              </span>
+            </Link>
+          </label>
+
+          <label className="mx-auto m2-4">
+            Forget password
+            <Link to="/user/forget-password" style={{textDecoration: 'none'}}>
+              <span style={{cursor: 'pointer'}} className="text-danger mx-1">
                 Click here
               </span>
             </Link>

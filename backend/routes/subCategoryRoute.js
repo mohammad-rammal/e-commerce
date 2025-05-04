@@ -21,13 +21,16 @@ const authService = require('../controllers/authController');
 // ex. access category ID from category router
 const router = express.Router({mergeParams: true});
 
-router.route('/').get(createFilterObject, getSubCategories).post(
-    // authService.protect,
-    // authService.allowedTo('admin', 'manager'),
-    setCategoryIdToBody,
-    createSubCategoryValidator,
-    createSubCategory,
-);
+router
+    .route('/')
+    .get(createFilterObject, getSubCategories)
+    .post(
+        authService.protect,
+        authService.allowedTo('admin', 'manager'),
+        setCategoryIdToBody,
+        createSubCategoryValidator,
+        createSubCategory,
+    );
 router
     .route('/:id')
     .get(getSubCategoryValidator, getSubCategory)

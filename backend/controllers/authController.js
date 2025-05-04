@@ -192,7 +192,7 @@ exports.verifyPasswordResetCode = asyncHandler(async (req, res, next) => {
 
     // 2- Reset code valid
     user.passwordResetVerified = true;
-    await user.save;
+    await user.save();
 
     res.status(200).json({
         status: 'Success',
@@ -215,7 +215,7 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
 
     // 2- Check if reset code verified
     if (!user.passwordResetVerified) {
-        return next(new ApiError('Reset code not verified, please check your emailagain..'), 400);
+        return next(new ApiError('Reset code not verified, please check your email again..'), 400);
     }
 
     user.password = req.body.newPassword;
